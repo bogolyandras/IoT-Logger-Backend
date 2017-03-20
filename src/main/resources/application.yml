@@ -1,0 +1,7 @@
+endpoints:
+  cors:
+    allowed-methods: GET, POST, PUT, PATCH, DELETE
+    allowed-origins: http://localhost
+
+logging:
+  file: logs/iot.log
