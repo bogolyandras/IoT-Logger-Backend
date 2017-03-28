@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE'
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+}
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:Athens-SR4'
+    }
+}
+dependencies {
+
+    compile('org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final')
+    compile('javax.validation:validation-api')
+    compile('org.hibernate:hibernate-validator')
+    compile('org.codehaus.groovy:groovy-all')
+    compile('com.fasterxml.jackson.core:jackson-annotations')
+
+}
