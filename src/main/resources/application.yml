@@ -1,7 +1,14 @@
 endpoints:
   cors:
-    allowed-methods: GET, POST, PUT, PATCH, DELETE
-    allowed-origins: http://localhost
+    allowed-origins: http://localhost:4200
 
 logging:
   file: logs/iot.log
+
+#mongodb:
+#  username: user
+#  password: password
+#  database: iotlogger
+
+web:
+  signing-key: appletree

@@ -13,6 +13,7 @@ public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
     public ApplicationConfiguration(@Value("${endpoints.cors.allowed-origins:#{null}}") String allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
     }
+
     private String allowedOrigins;
 
     @Override
