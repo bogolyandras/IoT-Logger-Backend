@@ -1,14 +1,13 @@
+spring:
+  profiles:
+    active: sql
+
 endpoints:
   cors:
     allowed-origins: http://localhost:4200
 
 logging:
   file: logs/iot.log
-
-#mongodb:
-#  username: user
-#  password: password
-#  database: iotlogger
 
 web:
   signing-key: appletree

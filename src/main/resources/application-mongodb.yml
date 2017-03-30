@@ -1,0 +1,4 @@
+#mongodb:
+#  username: user
+#  password: password
+#  database: iotlogger

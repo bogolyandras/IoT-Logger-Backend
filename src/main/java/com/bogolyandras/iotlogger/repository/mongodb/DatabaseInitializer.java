@@ -1,23 +1,25 @@
-package com.bogolyandras.iotlogger.service;
+package com.bogolyandras.iotlogger.repository.mongodb;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Service
-public class MongoInitializerService {
+@Component
+@Profile("mongodb")
+public class DatabaseInitializer {
 
-    private static final Logger logger = LoggerFactory.getLogger(MongoInitializerService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseInitializer.class);
 
     private MongoDatabase mongoDatabase;
 
     @Autowired
-    public MongoInitializerService(MongoDatabase mongoDatabase) {
+    public DatabaseInitializer(MongoDatabase mongoDatabase) {
         this.mongoDatabase = mongoDatabase;
         initializeDatabase();
     }
@@ -34,7 +36,8 @@ public class MongoInitializerService {
         mongoDatabase.createCollection("databaseChangeLog");
 
         mongoDatabase.createCollection("applicationUsers",
-                new CreateCollectionOptions().validationOptions(new ValidationOptions().validator(
+                new CreateCollectionOptions().validationOptions(new ValidationOptions()
+                    .validator(
                         Filters.and(
                                 Filters.exists("username"),
                                 Filters.exists("password"),
@@ -42,7 +45,7 @@ public class MongoInitializerService {
                                 Filters.exists("firstName"),
                                 Filters.exists("lastName")
                         )
-                    )
+                    ).validationLevel(ValidationLevel.STRICT)
                 )
         );
 
