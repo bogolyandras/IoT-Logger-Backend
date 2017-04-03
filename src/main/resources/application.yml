@@ -1,6 +1,6 @@
-spring:
-  profiles:
-    active: sql
+#spring:
+#  profiles:
+#    active: sql
 
 endpoints:
   cors:

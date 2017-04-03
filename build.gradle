@@ -33,7 +33,11 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.mongodb:mongodb-driver:3.4.2')
+	compile('org.javassist:javassist:3.18.2-GA')
+	compile('com.github.mongobee:mongobee:0.12')
+
 	runtime('com.h2database:h2')
 	runtime('mysql:mysql-connector-java')
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

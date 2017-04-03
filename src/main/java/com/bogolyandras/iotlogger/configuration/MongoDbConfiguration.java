@@ -1,5 +1,7 @@
 package com.bogolyandras.iotlogger.configuration;
 
+import com.bogolyandras.iotlogger.repository.mongodb.changelog.DatabaseChangeLog;
+import com.github.mongobee.Mongobee;
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,14 @@ public class MongoDbConfiguration {
     @Bean
     public MongoDatabase mongoDatabase(MongoClient mongoClient) {
         return mongoClient.getDatabase(database);
+    }
+
+    @Bean
+    public Mongobee mongobee(MongoClient mongoClient){
+        Mongobee runner = new Mongobee(mongoClient);
+        runner.setDbName(database);
+        runner.setChangeLogsScanPackage(DatabaseChangeLog.class.getPackage().getName());
+        return runner;
     }
 
 }
