@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 
 @Service
-@Profile("sql")
+@Profile("default")
 public class UserRepositoryImplementation implements UserRepository {
 
     private DataSource dataSource;

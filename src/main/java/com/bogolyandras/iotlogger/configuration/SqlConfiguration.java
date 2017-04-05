@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("sql")
+@Profile("default")
 @ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 public class SqlConfiguration {
 }
