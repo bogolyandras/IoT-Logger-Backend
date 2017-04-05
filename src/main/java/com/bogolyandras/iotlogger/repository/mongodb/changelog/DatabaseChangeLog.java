@@ -20,7 +20,8 @@ public class DatabaseChangeLog {
                                         Filters.size("password", 60),
                                         Filters.exists("enabled"),
                                         Filters.exists("firstName"),
-                                        Filters.exists("lastName")
+                                        Filters.exists("lastName"),
+                                        Filters.exists("userType")
                                 )
                         ).validationLevel(ValidationLevel.STRICT)
                 )

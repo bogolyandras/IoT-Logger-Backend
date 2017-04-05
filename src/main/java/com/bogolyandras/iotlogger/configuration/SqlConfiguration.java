@@ -13,10 +13,6 @@ import org.springframework.context.annotation.Profile;
 public class SqlConfiguration {
 
     @Autowired
-    public SqlConfiguration(SpringLiquibase springLiquibase) {
-        this.springLiquibase = springLiquibase;
-    }
-
-    private SpringLiquibase springLiquibase;
+    public SqlConfiguration(SpringLiquibase springLiquibase) { }
 
 }
