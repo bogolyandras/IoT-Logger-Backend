@@ -60,6 +60,7 @@ public class JwtService {
         byte[] signature = CryptographyUtility.signWithHS256(toBeSigned.getBytes(StandardCharsets.UTF_8), signingKey);
         return toBeSigned + "." + new String(Base64.getUrlEncoder().encode(signature));
     }
+
     public String verifyToken(String token) throws JwtException {
 
         String[] tokenParts = token.split("\\.");
