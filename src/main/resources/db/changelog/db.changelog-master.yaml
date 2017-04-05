@@ -4,6 +4,6 @@ databaseChangeLog:
       author: andrasboegoely
       changes:
         - sqlFile:
-          path: db/sql/application_users.sql
+            path: db/sql/application_users.sql
         - sqlFile:
-          path: db/sql/initial_credentials.sql
+            path: db/sql/initial_credentials.sql

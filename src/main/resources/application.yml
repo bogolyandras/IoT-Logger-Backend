@@ -1,6 +1,6 @@
-spring:
-  profiles:
-    active: mongodb
+#spring:
+#  profiles:
+#    active: mongodb
 
 endpoints:
   cors:
