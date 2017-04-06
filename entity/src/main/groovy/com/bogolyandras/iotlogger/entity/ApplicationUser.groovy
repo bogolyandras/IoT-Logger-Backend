@@ -7,7 +7,7 @@ class ApplicationUser {
 
     String id
 
-    Instant timeStamp
+    Instant registrationTime
 
     String username
 

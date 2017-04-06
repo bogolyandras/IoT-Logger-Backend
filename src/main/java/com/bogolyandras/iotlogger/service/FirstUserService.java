@@ -2,11 +2,12 @@ package com.bogolyandras.iotlogger.service;
 
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
 import com.bogolyandras.iotlogger.entity.InitialCredentials;
-import com.bogolyandras.iotlogger.repository.definition.FirstUserRepository;
+import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,25 +19,27 @@ public class FirstUserService {
 
     private static final Logger logger = LoggerFactory.getLogger(FirstUserService.class);
 
-    private FirstUserRepository firstUserRepository;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     private boolean firstUserSet = false;
 
     @Autowired
-    public FirstUserService(FirstUserRepository firstUserRepository) {
-        this.firstUserRepository = firstUserRepository;
+    public FirstUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
     public void initializeFirstUserPasswordIfDoesNotExist() {
 
-        InitialCredentials initialCredentials = firstUserRepository.getInitialCredentials();
+        InitialCredentials initialCredentials = userRepository.getInitialCredentials();
 
         if (initialCredentials == null) {
             byte[] randomBytes = new byte[10];
             new Random().nextBytes(randomBytes);
             String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
-            firstUserRepository.addInitialCredentials(
+            userRepository.addInitialCredentials(
                     InitialCredentials.builder()
                             .initialized(false)
                             .password(randomPassword)
@@ -55,14 +58,15 @@ public class FirstUserService {
     }
 
     public void initializeFirstUser(FirstUserCredentials firstUserCredentials) {
-        InitialCredentials initialCredentials = firstUserRepository.getInitialCredentials();
+        InitialCredentials initialCredentials = userRepository.getInitialCredentials();
         if (initialCredentials.getInitialized()) {
             throw new AccessDeniedException("Already initialized!");
         }
         if (!firstUserCredentials.getServerPassword().equals(initialCredentials.getPassword())) {
             throw new AccessDeniedException("Incorrect password!");
         }
-
+        firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
+        userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials);
     }
 
     private void logPassword(String passwordToBeLogged) {
