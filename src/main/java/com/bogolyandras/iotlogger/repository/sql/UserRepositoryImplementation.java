@@ -78,17 +78,16 @@ public class UserRepositoryImplementation implements UserRepository {
             preparedStatement.setString(3, firstUserCredentials.getServerPassword());
             int i = preparedStatement.executeUpdate();
             if (i != 1) {
-                throw new SQLException("No initial credentials has been updated!");
+                throw new SQLException("Initial Credentials has not been updated!");
             }
 
-            PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement("INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) VALUES (?,?,?,?,?,?,?)");
+            PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement("INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) VALUES (?,?,?,?,?,?,NOW())");
             preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
             preparedStatementForFirstUserRecord.setString(2, firstUserCredentials.getPassword());
             preparedStatementForFirstUserRecord.setBoolean(3, true);
             preparedStatementForFirstUserRecord.setString(4, firstUserCredentials.getFirstName());
             preparedStatementForFirstUserRecord.setString(5, firstUserCredentials.getLastName());
             preparedStatementForFirstUserRecord.setString(6, UserType.Administrator.toString());
-            preparedStatementForFirstUserRecord.setTimestamp(7, Timestamp.from(Instant.now()));
             if (preparedStatementForFirstUserRecord.executeUpdate() != 1) {
                 throw new SQLException("First user could not be inserted!");
             }

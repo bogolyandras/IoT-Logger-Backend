@@ -5,6 +5,8 @@ import com.github.mongobee.changeset.ChangeSet;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.*;
 
+import static com.mongodb.client.model.Filters.*;
+
 @ChangeLog
 public class DatabaseChangeLog {
 
@@ -14,14 +16,13 @@ public class DatabaseChangeLog {
         db.createCollection("applicationUsers",
                 new CreateCollectionOptions().validationOptions(new ValidationOptions()
                         .validator(
-                                Filters.and(
-                                        Filters.exists("username"),
-                                        Filters.exists("password"),
-                                        Filters.size("password", 60),
-                                        Filters.exists("enabled"),
-                                        Filters.exists("firstName"),
-                                        Filters.exists("lastName"),
-                                        Filters.exists("userType")
+                                and(
+                                        exists("username"),
+                                        exists("password"),
+                                        exists("enabled"),
+                                        exists("firstName"),
+                                        exists("lastName"),
+                                        exists("userType")
                                 )
                         ).validationLevel(ValidationLevel.STRICT)
                 )
@@ -33,10 +34,10 @@ public class DatabaseChangeLog {
         db.createCollection("initialCredentials",
                 new CreateCollectionOptions().validationOptions(new ValidationOptions()
                         .validator(
-                                Filters.and(
-                                        Filters.exists("uniqueDocument"),
-                                        Filters.exists("password"),
-                                        Filters.exists("initialized")
+                                and(
+                                        exists("uniqueDocument"),
+                                        exists("password"),
+                                        exists("initialized")
                                 )
                         ).validationLevel(ValidationLevel.STRICT)
                 )
