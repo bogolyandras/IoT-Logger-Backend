@@ -76,12 +76,35 @@ public class UserRepositoryImplementation implements UserRepository {
 
     @Override
     public ApplicationUser findAccountByUsername(String username) {
-        throw new RuntimeException("Not implemented yet!");
+        Document document = applicationUsers.find(eq("username", username)).first();
+        if (document == null) {
+            return null;
+        } else {
+            return documentToApplicationUser(document);
+        }
     }
 
     @Override
     public ApplicationUser findAccountById(String identifier) {
-        throw new RuntimeException("Not implemented yet!");
+        Document document = applicationUsers.find(eq("_id", identifier)).first();
+        if (document == null) {
+            return null;
+        } else {
+            return documentToApplicationUser(document);
+        }
+    }
+
+    private ApplicationUser documentToApplicationUser(Document document) {
+        return ApplicationUser.builder()
+                .id(document.getObjectId("_id").toString())
+                .username(document.getString("username"))
+                .password(document.getString("password"))
+                .enabled(document.getBoolean("enabled"))
+                .firstName(document.getString("firstName"))
+                .lastName(document.getString("lastName"))
+                .userType(UserType.valueOf(document.getString("userType")))
+                .registrationTime((long)document.getObjectId("_id").getTimestamp())
+                .build();
     }
 
 }

@@ -8,3 +8,6 @@ CREATE TABLE application_users(
   user_type VARCHAR(20) NOT NULL,
   registration_time TIMESTAMP NOT NULL
 );
+
+ALTER TABLE application_users
+ADD CONSTRAINT application_users_uc_username UNIQUE (username);

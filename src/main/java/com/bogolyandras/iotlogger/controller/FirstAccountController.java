@@ -14,12 +14,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/account/firstAccount")
-public class FirstUserController {
+public class FirstAccountController {
 
     private FirstAccountService firstAccountService;
 
     @Autowired
-    public FirstUserController(FirstAccountService firstAccountService) {
+    public FirstAccountController(FirstAccountService firstAccountService) {
         this.firstAccountService = firstAccountService;
     }
 
@@ -30,7 +30,7 @@ public class FirstUserController {
                 .build();
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.POST)
     public JwtToken initializeFirstUser(@Valid @RequestBody FirstUserCredentials firstUserCredentials) {
         return firstAccountService.initializeFirstUser(firstUserCredentials);
     }

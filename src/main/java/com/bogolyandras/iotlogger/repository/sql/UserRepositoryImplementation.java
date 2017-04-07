@@ -120,12 +120,53 @@ public class UserRepositoryImplementation implements UserRepository {
 
     @Override
     public ApplicationUser findAccountByUsername(String username) {
-        throw new RuntimeException("Not implemented yet!");
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(true);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `username`=?");
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
+                return  null;
+            } else {
+                return resultSetToApplicationUser(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public ApplicationUser findAccountById(String identifier) {
-        throw new RuntimeException("Not implemented yet!");
+        Connection connection = null;
+        try {
+            connection = dataSource.getConnection();
+            connection.setAutoCommit(true);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `id`=?");
+            preparedStatement.setString(1, identifier);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
+                return  null;
+            } else {
+                return resultSetToApplicationUser(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private ApplicationUser resultSetToApplicationUser(ResultSet resultSet) throws SQLException {
+        return ApplicationUser.builder()
+                .id(Long.toString(resultSet.getLong("id")))
+                .username(resultSet.getString("username"))
+                .password(resultSet.getString("password"))
+                .enabled(resultSet.getBoolean("enabled"))
+                .firstName(resultSet.getString("first_name"))
+                .lastName(resultSet.getString("last_name"))
+                .userType(UserType.valueOf(resultSet.getString("user_type")))
+                .registrationTime(resultSet.getTimestamp("registration_time").toInstant().getEpochSecond() / 1000)
+                .build();
     }
 
 }

@@ -1,13 +1,15 @@
 package com.bogolyandras.iotlogger.entity
 
+import groovy.transform.builder.Builder
+
 import java.time.Instant
 
-
+@Builder
 class ApplicationUser {
 
     String id
 
-    Instant registrationTime
+    Long registrationTime
 
     String username
 
