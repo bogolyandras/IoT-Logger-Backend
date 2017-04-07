@@ -12,10 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 @Repository
 @Profile("default")
@@ -84,7 +81,10 @@ public class UserRepositoryImplementation implements UserRepository {
                 throw new SQLException("Initial Credentials has not been updated!");
             }
 
-            PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement("INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) VALUES (?,?,?,?,?,?,NOW())");
+            PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement(
+                    "INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) " +
+                            "VALUES (?,?,?,?,?,?,NOW())",
+                    Statement.RETURN_GENERATED_KEYS);
             preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
             preparedStatementForFirstUserRecord.setString(2, firstUserCredentials.getPassword());
             preparedStatementForFirstUserRecord.setBoolean(3, true);
@@ -95,14 +95,14 @@ public class UserRepositoryImplementation implements UserRepository {
                 throw new SQLException("First user could not be inserted!");
             }
 
-            PreparedStatement preparedStatementForUserIdQuery = connection.prepareStatement("SELECT `id` FROM `application_users` WHERE `username`=?");
-            preparedStatementForUserIdQuery.setString(1, firstUserCredentials.getUsername());
-            ResultSet resultSet = preparedStatementForUserIdQuery.executeQuery();
-
-            if (!resultSet.next()) {
+            ResultSet rs = preparedStatementForFirstUserRecord.getGeneratedKeys();
+            String userId;
+            if (!rs.next()){
                 throw new SQLException("User id cannot be fetched!");
+            } else {
+                userId = Long.toString(rs.getLong(1));
             }
-            String userId = Long.toString(resultSet.getLong("id"));
+
             connection.commit();
             return userId;
 
