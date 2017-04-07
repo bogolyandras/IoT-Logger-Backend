@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.*;
-import java.time.Instant;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Repository
 @Profile("default")
@@ -66,7 +68,7 @@ public class UserRepositoryImplementation implements UserRepository {
     }
 
     @Override
-    public void disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
@@ -93,14 +95,24 @@ public class UserRepositoryImplementation implements UserRepository {
                 throw new SQLException("First user could not be inserted!");
             }
 
+            PreparedStatement preparedStatementForUserIdQuery = connection.prepareStatement("SELECT `id` FROM `application_users` WHERE `username`=?");
+            preparedStatementForUserIdQuery.setString(1, firstUserCredentials.getUsername());
+            ResultSet resultSet = preparedStatementForUserIdQuery.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new SQLException("User id cannot be fetched!");
+            }
+            String userId = Long.toString(resultSet.getLong("id"));
             connection.commit();
+            return userId;
+
         } catch (SQLException e) {
             try {
                 if (connection != null) {
                     connection.rollback();
                 }
             } catch (SQLException e1) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(e1);
             }
             throw new RuntimeException(e);
         }

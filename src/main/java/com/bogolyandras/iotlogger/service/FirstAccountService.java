@@ -1,6 +1,7 @@
 package com.bogolyandras.iotlogger.service;
 
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
+import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
 import com.bogolyandras.iotlogger.entity.InitialCredentials;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;
@@ -21,13 +22,15 @@ public class FirstAccountService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtService jwtService;
 
     private boolean firstUserSet = false;
 
     @Autowired
-    public FirstAccountService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public FirstAccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @PostConstruct
@@ -57,7 +60,7 @@ public class FirstAccountService {
 
     }
 
-    public void initializeFirstUser(FirstUserCredentials firstUserCredentials) {
+    public JwtToken initializeFirstUser(FirstUserCredentials firstUserCredentials) {
         InitialCredentials initialCredentials = userRepository.getInitialCredentials();
         if (initialCredentials.getInitialized()) {
             throw new AccessDeniedException("Already initialized!");
@@ -66,7 +69,9 @@ public class FirstAccountService {
             throw new AccessDeniedException("Incorrect password!");
         }
         firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
-        userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials);
+        return JwtToken.builder()
+                .token(jwtService.issueToken(userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)))
+                .build();
     }
 
     private void logPassword(String passwordToBeLogged) {

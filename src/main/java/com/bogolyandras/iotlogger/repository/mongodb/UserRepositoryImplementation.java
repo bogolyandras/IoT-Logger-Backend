@@ -54,7 +54,7 @@ public class UserRepositoryImplementation implements UserRepository {
     }
 
     @Override
-    public void disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
 
         UpdateResult updateResult = initialCredentials.updateOne(
                 and(eq("uniqueDocument", true), eq("initialized", false), eq("password", firstUserCredentials.getServerPassword())),
@@ -71,6 +71,7 @@ public class UserRepositoryImplementation implements UserRepository {
                 .append("lastName", firstUserCredentials.getLastName())
                 .append("userType", UserType.Administrator.toString());
         applicationUsers.insertOne(document);
+        return document.getObjectId("_id").toString();
     }
 
     @Override

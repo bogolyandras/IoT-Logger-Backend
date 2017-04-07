@@ -2,6 +2,7 @@ package com.bogolyandras.iotlogger.controller;
 
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
 import com.bogolyandras.iotlogger.dto.FirstUserStatus;
+import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
 import com.bogolyandras.iotlogger.service.FirstAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,8 +31,8 @@ public class FirstUserController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public void initializeFirstUser(@Valid @RequestBody FirstUserCredentials firstUserCredentials) {
-        firstAccountService.initializeFirstUser(firstUserCredentials);
+    public JwtToken initializeFirstUser(@Valid @RequestBody FirstUserCredentials firstUserCredentials) {
+        return firstAccountService.initializeFirstUser(firstUserCredentials);
     }
 
 }

@@ -8,7 +8,7 @@ public interface UserRepository {
 
     InitialCredentials getInitialCredentials();
     void addInitialCredentials(InitialCredentials initialCredentials);
-    void disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials);
+    String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials);
     ApplicationUser findAccountByUsername(String username);
     ApplicationUser findAccountById(String identifier);
 
