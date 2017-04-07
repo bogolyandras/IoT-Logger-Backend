@@ -1,6 +1,7 @@
 package com.bogolyandras.iotlogger.repository.sql;
 
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
+import com.bogolyandras.iotlogger.entity.ApplicationUser;
 import com.bogolyandras.iotlogger.entity.InitialCredentials;
 import com.bogolyandras.iotlogger.entity.UserType;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
@@ -103,6 +104,16 @@ public class UserRepositoryImplementation implements UserRepository {
             }
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ApplicationUser findAccountByUsername(String username) {
+        throw new RuntimeException("Not implemented yet!");
+    }
+
+    @Override
+    public ApplicationUser findAccountById(String identifier) {
+        throw new RuntimeException("Not implemented yet!");
     }
 
 }

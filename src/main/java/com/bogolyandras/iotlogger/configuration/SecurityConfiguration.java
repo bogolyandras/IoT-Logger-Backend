@@ -1,8 +1,9 @@
 package com.bogolyandras.iotlogger.configuration;
 
 import com.bogolyandras.iotlogger.security.JwtAuthenticationFilter;
-import com.bogolyandras.iotlogger.service.ApplicationUserService;
+import com.bogolyandras.iotlogger.service.AuthenticationService;
 import com.bogolyandras.iotlogger.service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -18,17 +18,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private JwtService jwtService;
-    private ApplicationUserService applicationUserService;
+    private AuthenticationService authenticationService;
+    private PasswordEncoder passwordEncoder;
 
-    public SecurityConfiguration(JwtService jwtService, ApplicationUserService applicationUserService) {
+    @Autowired
+    public SecurityConfiguration(JwtService jwtService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.jwtService = jwtService;
-        this.applicationUserService = applicationUserService;
+        this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService, applicationUserService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, authenticationService), UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeRequests()
                 .anyRequest().permitAll()
@@ -47,18 +50,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(username -> {
             throw new RuntimeException();
-        }).passwordEncoder(passwordEncoder());
+        }).passwordEncoder(passwordEncoder);
     }
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }

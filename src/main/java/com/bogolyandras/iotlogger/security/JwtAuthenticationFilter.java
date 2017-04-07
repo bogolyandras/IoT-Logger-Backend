@@ -2,7 +2,7 @@ package com.bogolyandras.iotlogger.security;
 
 
 import com.bogolyandras.iotlogger.exception.JwtException;
-import com.bogolyandras.iotlogger.service.ApplicationUserService;
+import com.bogolyandras.iotlogger.service.AuthenticationService;
 import com.bogolyandras.iotlogger.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +20,11 @@ public class JwtAuthenticationFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private JwtService jwtService;
-    private ApplicationUserService applicationUserService;
+    private AuthenticationService authenticationService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, ApplicationUserService applicationUserService) {
+    public JwtAuthenticationFilter(JwtService jwtService, AuthenticationService authenticationService) {
         this.jwtService = jwtService;
-        this.applicationUserService = applicationUserService;
+        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter implements Filter {
                 String userId;
                 try {
                     userId = jwtService.verifyToken(jwtToken);
-                    JwtUser jwtUser = applicationUserService.loadUserById(userId);
+                    JwtUser jwtUser = authenticationService.loadUserById(userId);
                     Authentication authentication = new JwtAuthenticationToken(jwtUser);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } catch (JwtException | UsernameNotFoundException e) {

@@ -15,9 +15,9 @@ import javax.xml.bind.DatatypeConverter;
 import java.util.Random;
 
 @Service
-public class FirstUserService {
+public class FirstAccountService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FirstUserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FirstAccountService.class);
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -25,7 +25,7 @@ public class FirstUserService {
     private boolean firstUserSet = false;
 
     @Autowired
-    public FirstUserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public FirstAccountService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }

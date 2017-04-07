@@ -1,6 +1,7 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
+import com.bogolyandras.iotlogger.entity.ApplicationUser;
 import com.bogolyandras.iotlogger.entity.InitialCredentials;
 import com.bogolyandras.iotlogger.entity.UserType;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
@@ -11,8 +12,6 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
-
-import java.time.Instant;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -72,6 +71,16 @@ public class UserRepositoryImplementation implements UserRepository {
                 .append("lastName", firstUserCredentials.getLastName())
                 .append("userType", UserType.Administrator.toString());
         applicationUsers.insertOne(document);
+    }
+
+    @Override
+    public ApplicationUser findAccountByUsername(String username) {
+        throw new RuntimeException("Not implemented yet!");
+    }
+
+    @Override
+    public ApplicationUser findAccountById(String identifier) {
+        throw new RuntimeException("Not implemented yet!");
     }
 
 }
