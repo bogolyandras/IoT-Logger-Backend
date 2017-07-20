@@ -1,8 +1,8 @@
 package com.bogolyandras.iotlogger.repository.definition;
 
+import com.bogolyandras.iotlogger.domain.ApplicationUser;
+import com.bogolyandras.iotlogger.domain.InitialCredentials;
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
-import com.bogolyandras.iotlogger.entity.ApplicationUser;
-import com.bogolyandras.iotlogger.entity.InitialCredentials;
 
 public interface UserRepository {
 

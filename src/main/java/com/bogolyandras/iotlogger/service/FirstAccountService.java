@@ -1,8 +1,8 @@
 package com.bogolyandras.iotlogger.service;
 
+import com.bogolyandras.iotlogger.domain.InitialCredentials;
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
 import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
-import com.bogolyandras.iotlogger.entity.InitialCredentials;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +43,7 @@ public class FirstAccountService {
             new Random().nextBytes(randomBytes);
             String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
             userRepository.addInitialCredentials(
-                    InitialCredentials.builder()
-                            .initialized(false)
-                            .password(randomPassword)
-                    .build()
+                    new InitialCredentials(randomPassword, false)
             );
             logger.info("A new password has been generated to create the first user with");
             logPassword(randomPassword);
@@ -69,9 +66,7 @@ public class FirstAccountService {
             throw new AccessDeniedException("Incorrect password!");
         }
         firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
-        return JwtToken.builder()
-                .token(jwtService.issueToken(userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)))
-                .build();
+        return new JwtToken(jwtService.issueToken(userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)));
     }
 
     private void logPassword(String passwordToBeLogged) {

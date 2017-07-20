@@ -1,11 +1,7 @@
 package com.bogolyandras.iotlogger.configuration;
 
-import com.bogolyandras.iotlogger.repository.mongodb.changelog.DatabaseChangeLog;
-import com.github.mongobee.Mongobee;
-import com.github.mongobee.exception.MongobeeException;
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +11,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-@Profile("mongodb")
+@Profile("default")
 public class MongoDbConfiguration {
 
-    @Autowired
     public MongoDbConfiguration(
             @Value("${mongodb.username:#{null}}") String userName,
             @Value("${mongodb.password:#{null}}") String password,
@@ -28,14 +23,14 @@ public class MongoDbConfiguration {
         this.database = database;
     }
 
-    private String userName;
-    private String password;
-    private String database;
+    private final String userName;
+    private final String password;
+    private final String database;
 
     @Bean
     public MongoClient mongoClient() {
 
-        List<ServerAddress> serverAddresses = Collections.singletonList(
+        /*List<ServerAddress> serverAddresses = Collections.singletonList(
                 new ServerAddress("localhost", 27017)
         );
 
@@ -48,21 +43,13 @@ public class MongoDbConfiguration {
                 .writeConcern(WriteConcern.MAJORITY)
                 .build();
 
-        return new MongoClient(serverAddresses, mongoCredentials, mongoClientOptions);
+        return new MongoClient(serverAddresses, mongoCredentials, mongoClientOptions);*/
+        return new MongoClient();
     }
 
     @Bean
-    public MongoDatabase mongoDatabase(MongoClient mongoClient) {
-        Mongobee runner = new Mongobee(mongoClient);
-        runner.setDbName(database);
-        runner.setChangeLogsScanPackage(DatabaseChangeLog.class.getPackage().getName());
-        try {
-            runner.execute();
-        } catch (MongobeeException e) {
-            throw new RuntimeException(e);
-        }
-
-        return mongoClient.getDatabase(database);
+    public MongoDatabase mongoDatabase() {
+        return mongoClient().getDatabase("iotlogger");
     }
 
 }

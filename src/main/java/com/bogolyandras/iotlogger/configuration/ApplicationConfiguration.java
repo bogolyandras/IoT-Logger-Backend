@@ -1,6 +1,5 @@
 package com.bogolyandras.iotlogger.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,12 +11,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class ApplicationConfiguration extends WebMvcConfigurerAdapter {
 
-    @Autowired
+    private final String allowedOrigins;
+
     public ApplicationConfiguration(@Value("${endpoints.cors.allowed-origins:#{null}}") String allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
     }
-
-    private String allowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

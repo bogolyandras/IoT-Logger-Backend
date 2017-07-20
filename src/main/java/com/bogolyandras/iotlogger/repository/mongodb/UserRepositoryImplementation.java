@@ -1,9 +1,9 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
+import com.bogolyandras.iotlogger.domain.ApplicationUser;
+import com.bogolyandras.iotlogger.domain.InitialCredentials;
+import com.bogolyandras.iotlogger.domain.UserType;
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
-import com.bogolyandras.iotlogger.entity.ApplicationUser;
-import com.bogolyandras.iotlogger.entity.InitialCredentials;
-import com.bogolyandras.iotlogger.entity.UserType;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -19,7 +19,7 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 @Repository
-@Profile("mongodb")
+@Profile("default")
 public class UserRepositoryImplementation implements UserRepository {
 
     private MongoCollection<Document> initialCredentials;
@@ -38,10 +38,10 @@ public class UserRepositoryImplementation implements UserRepository {
         if (uniqueDocument == null) {
             return null;
         } else {
-            return InitialCredentials.builder()
-                    .initialized(uniqueDocument.getBoolean("initialized"))
-                    .password(uniqueDocument.getString("password"))
-                    .build();
+            return new InitialCredentials(
+                    uniqueDocument.getString("password"),
+                    uniqueDocument.getBoolean("initialized")
+            );
         }
     }
 
@@ -95,16 +95,16 @@ public class UserRepositoryImplementation implements UserRepository {
     }
 
     private ApplicationUser documentToApplicationUser(Document document) {
-        return ApplicationUser.builder()
-                .id(document.getObjectId("_id").toString())
-                .username(document.getString("username"))
-                .password(document.getString("password"))
-                .enabled(document.getBoolean("enabled"))
-                .firstName(document.getString("firstName"))
-                .lastName(document.getString("lastName"))
-                .userType(UserType.valueOf(document.getString("userType")))
-                .registrationTime((long)document.getObjectId("_id").getTimestamp())
-                .build();
+        ApplicationUser applicationUser = new ApplicationUser();
+        applicationUser.setId(document.getObjectId("_id").toString());
+        applicationUser.setUsername(document.getString("username"));
+        applicationUser.setPassword(document.getString("password"));
+        applicationUser.setEnabled(document.getBoolean("enabled"));
+        applicationUser.setFirstName(document.getString("firstName"));
+        applicationUser.setLastName(document.getString("lastName"));
+        applicationUser.setUserType(UserType.valueOf(document.getString("userType")));
+        applicationUser.setRegistrationTime((long)document.getObjectId("_id").getTimestamp());
+        return applicationUser;
     }
 
 }

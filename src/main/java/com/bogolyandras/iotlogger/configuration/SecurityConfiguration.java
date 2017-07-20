@@ -21,7 +21,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthenticationService authenticationService;
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
     public SecurityConfiguration(JwtService jwtService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;

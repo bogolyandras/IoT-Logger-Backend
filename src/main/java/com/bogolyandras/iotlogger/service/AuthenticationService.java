@@ -1,8 +1,8 @@
 package com.bogolyandras.iotlogger.service;
 
+import com.bogolyandras.iotlogger.domain.ApplicationUser;
 import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
 import com.bogolyandras.iotlogger.dto.authentication.UsernamePassword;
-import com.bogolyandras.iotlogger.entity.ApplicationUser;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.bogolyandras.iotlogger.security.JwtUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,10 @@ import java.util.List;
 @Service
 public class AuthenticationService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    @Autowired
     public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -41,9 +40,7 @@ public class AuthenticationService {
         if (!passwordEncoder.matches(usernamePassword.getPassword(), account.getPassword())) {
             throw new BadCredentialsException("Password is incorrect!");
         }
-        return JwtToken.builder()
-                .token(jwtService.issueToken(account.getId()))
-                .build();
+        return new JwtToken(jwtService.issueToken(account.getId()));
     }
 
     public JwtUser loadUserById(String identifier) {

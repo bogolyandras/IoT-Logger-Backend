@@ -1,36 +1,32 @@
 package com.bogolyandras.iotlogger.repository.sql;
 
+import com.bogolyandras.iotlogger.domain.ApplicationUser;
+import com.bogolyandras.iotlogger.domain.InitialCredentials;
+import com.bogolyandras.iotlogger.domain.UserType;
 import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
-import com.bogolyandras.iotlogger.entity.ApplicationUser;
-import com.bogolyandras.iotlogger.entity.InitialCredentials;
-import com.bogolyandras.iotlogger.entity.UserType;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 
 @Repository
-@Profile("default")
+@Profile("mysql")
 public class UserRepositoryImplementation implements UserRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRepositoryImplementation.class);
 
-    private DataSource dataSource;
+    private final Connection connection;
 
-    @Autowired
-    public UserRepositoryImplementation(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public UserRepositoryImplementation(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
     public InitialCredentials getInitialCredentials() {
         try {
-            Connection connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             ResultSet resultSet = connection
                     .createStatement()
@@ -38,10 +34,10 @@ public class UserRepositoryImplementation implements UserRepository {
             if (!resultSet.next()) {
                 return null;
             } else {
-                return InitialCredentials.builder()
-                        .initialized(resultSet.getBoolean("initialized"))
-                        .password(resultSet.getString("password"))
-                        .build();
+                return new InitialCredentials(
+                        resultSet.getString("password"),
+                        resultSet.getBoolean("initialized")
+                );
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -52,7 +48,6 @@ public class UserRepositoryImplementation implements UserRepository {
     public void addInitialCredentials(InitialCredentials initialCredentials) {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `initial_credentials`(`unique_row`, `password`, `initialized`) VALUES (?, ?, ?)");
             preparedStatement.setBoolean(1, true);
@@ -68,7 +63,6 @@ public class UserRepositoryImplementation implements UserRepository {
     public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 
@@ -122,7 +116,6 @@ public class UserRepositoryImplementation implements UserRepository {
     public ApplicationUser findAccountByUsername(String username) {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `username`=?");
             preparedStatement.setString(1, username);
@@ -141,7 +134,6 @@ public class UserRepositoryImplementation implements UserRepository {
     public ApplicationUser findAccountById(String identifier) {
         Connection connection = null;
         try {
-            connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `id`=?");
             preparedStatement.setString(1, identifier);
@@ -157,16 +149,16 @@ public class UserRepositoryImplementation implements UserRepository {
     }
 
     private ApplicationUser resultSetToApplicationUser(ResultSet resultSet) throws SQLException {
-        return ApplicationUser.builder()
-                .id(Long.toString(resultSet.getLong("id")))
-                .username(resultSet.getString("username"))
-                .password(resultSet.getString("password"))
-                .enabled(resultSet.getBoolean("enabled"))
-                .firstName(resultSet.getString("first_name"))
-                .lastName(resultSet.getString("last_name"))
-                .userType(UserType.valueOf(resultSet.getString("user_type")))
-                .registrationTime(resultSet.getTimestamp("registration_time").toInstant().getEpochSecond() / 1000)
-                .build();
+        ApplicationUser applicationUser = new ApplicationUser();
+        applicationUser.setId(Long.toString(resultSet.getLong("id")));
+        applicationUser.setUsername(resultSet.getString("username"));
+        applicationUser.setPassword(resultSet.getString("password"));
+        applicationUser.setEnabled(resultSet.getBoolean("enabled"));
+        applicationUser.setFirstName(resultSet.getString("first_name"));
+        applicationUser.setLastName(resultSet.getString("last_name"));
+        applicationUser.setUserType(UserType.valueOf(resultSet.getString("user_type")));
+        applicationUser.setRegistrationTime(resultSet.getTimestamp("registration_time").toInstant().getEpochSecond() / 1000);
+        return applicationUser;
     }
 
 }
