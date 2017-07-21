@@ -3,7 +3,6 @@ package com.bogolyandras.iotlogger.configuration;
 import com.bogolyandras.iotlogger.security.JwtAuthenticationFilter;
 import com.bogolyandras.iotlogger.service.AuthenticationService;
 import com.bogolyandras.iotlogger.service.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,9 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private JwtService jwtService;
-    private AuthenticationService authenticationService;
-    private PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
     public SecurityConfiguration(JwtService jwtService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.jwtService = jwtService;

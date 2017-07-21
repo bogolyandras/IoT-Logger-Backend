@@ -6,7 +6,6 @@ import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,33 +19,30 @@ public class FirstAccountService {
 
     private static final Logger logger = LoggerFactory.getLogger(FirstAccountService.class);
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     private boolean firstUserSet = false;
+    private String randomPassword;
 
-    @Autowired
     public FirstAccountService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+
+        byte[] randomBytes = new byte[10];
+        new Random().nextBytes(randomBytes);
+        randomPassword = DatatypeConverter.printHexBinary(randomBytes);
     }
 
     @PostConstruct
     public void initializeFirstUserPasswordIfDoesNotExist() {
 
-        InitialCredentials initialCredentials = userRepository.getInitialCredentials();
+        InitialCredentials initialCredentials = userRepository.getInitialCredentials(randomPassword);
 
         if (initialCredentials == null) {
-            byte[] randomBytes = new byte[10];
-            new Random().nextBytes(randomBytes);
-            String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
-            userRepository.addInitialCredentials(
-                    new InitialCredentials(randomPassword, false)
-            );
-            logger.info("A new password has been generated to create the first user with");
-            logPassword(randomPassword);
+            logger.info("Failed to initialize the database");
         } else if (!initialCredentials.getInitialized()) {
             logger.info("The first user has not been created. " +
                     "You can use the following password for this action");
@@ -58,7 +54,7 @@ public class FirstAccountService {
     }
 
     public JwtToken initializeFirstUser(FirstUserCredentials firstUserCredentials) {
-        InitialCredentials initialCredentials = userRepository.getInitialCredentials();
+        InitialCredentials initialCredentials = userRepository.getInitialCredentials(randomPassword);
         if (initialCredentials.getInitialized()) {
             throw new AccessDeniedException("Already initialized!");
         }
@@ -66,6 +62,7 @@ public class FirstAccountService {
             throw new AccessDeniedException("Incorrect password!");
         }
         firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
+        firstUserSet = true;
         return new JwtToken(jwtService.issueToken(userRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)));
     }
 

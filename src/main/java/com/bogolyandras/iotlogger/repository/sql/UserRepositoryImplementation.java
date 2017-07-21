@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 @Repository
@@ -18,51 +19,67 @@ public class UserRepositoryImplementation implements UserRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(UserRepositoryImplementation.class);
 
-    private final Connection connection;
+    private final DataSource dataSource;
 
-    public UserRepositoryImplementation(Connection connection) {
-        this.connection = connection;
+    public UserRepositoryImplementation(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     @Override
-    public InitialCredentials getInitialCredentials() {
-        try {
-            connection.setAutoCommit(true);
-            ResultSet resultSet = connection
-                    .createStatement()
-                    .executeQuery("SELECT `initialized`, `password` FROM `initial_credentials` WHERE `unique_row` = 1");
-            if (!resultSet.next()) {
+    public InitialCredentials getInitialCredentials(String passwordIfNotInitialized) {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            connection.setAutoCommit(false);
+
+            try {
+                ResultSet resultSet = connection
+                        .createStatement()
+                        .executeQuery("SELECT `initialized`, `password` FROM `initial_credentials` WHERE `unique_row` = 1");
+
+                if (!resultSet.next()) {
+
+                    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `initial_credentials`(`unique_row`, `password`, `initialized`) VALUES (?, ?, ?)");
+                    preparedStatement.setBoolean(1, true);
+                    preparedStatement.setString(2, passwordIfNotInitialized);
+                    preparedStatement.setBoolean(3, false);
+                    preparedStatement.executeUpdate();
+
+                    connection.commit();
+
+                    return new InitialCredentials(passwordIfNotInitialized,false);
+
+                } else {
+
+                    String password = resultSet.getString("password");
+                    boolean initialized = resultSet.getBoolean("initialized");
+
+                    connection.commit();
+
+                    return new InitialCredentials(password, initialized);
+                }
+
+            } catch (SQLException e) {
+                connection.rollback();
+                connection.setAutoCommit(true);
                 return null;
-            } else {
-                return new InitialCredentials(
-                        resultSet.getString("password"),
-                        resultSet.getBoolean("initialized")
-                );
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    @Override
-    public void addInitialCredentials(InitialCredentials initialCredentials) {
-        Connection connection = null;
-        try {
-            connection.setAutoCommit(true);
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `initial_credentials`(`unique_row`, `password`, `initialized`) VALUES (?, ?, ?)");
-            preparedStatement.setBoolean(1, true);
-            preparedStatement.setString(2, initialCredentials.getPassword());
-            preparedStatement.setBoolean(3, initialCredentials.getInitialized());
-            preparedStatement.executeUpdate();
+        } catch (SQLRecoverableException e) {
+            logger.warn("Can't determine initial stuff", e);
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
     public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
         Connection connection = null;
         try {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 
@@ -114,8 +131,9 @@ public class UserRepositoryImplementation implements UserRepository {
 
     @Override
     public ApplicationUser findAccountByUsername(String username) {
-        Connection connection = null;
+        Connection connection;
         try {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `username`=?");
             preparedStatement.setString(1, username);
@@ -132,8 +150,9 @@ public class UserRepositoryImplementation implements UserRepository {
 
     @Override
     public ApplicationUser findAccountById(String identifier) {
-        Connection connection = null;
+        Connection connection;
         try {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `id`=?");
             preparedStatement.setString(1, identifier);

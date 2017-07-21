@@ -6,8 +6,7 @@ import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
 
 public interface UserRepository {
 
-    InitialCredentials getInitialCredentials();
-    void addInitialCredentials(InitialCredentials initialCredentials);
+    InitialCredentials getInitialCredentials(String passwordIfNotInitialized);
     String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials);
     ApplicationUser findAccountByUsername(String username);
     ApplicationUser findAccountById(String identifier);

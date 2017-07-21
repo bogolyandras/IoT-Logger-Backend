@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
+import java.util.TimeZone;
+
 @SpringBootApplication(exclude = {
 		MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class,
@@ -20,6 +22,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 public class IoTLoggerApplication {
 
 	public static void main(String[] args) {
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(IoTLoggerApplication.class, args);
 	}
+
 }
