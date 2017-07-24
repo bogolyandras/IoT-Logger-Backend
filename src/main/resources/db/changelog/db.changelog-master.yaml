@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: initialize_database
-      author: andrasboegoely
-      changes:
-        - sqlFile:
-            path: db/sql/application_users.sql
-        - sqlFile:
-            path: db/sql/initial_credentials.sql

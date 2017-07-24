@@ -23,61 +23,10 @@ import static com.mongodb.client.model.Updates.set;
 @Profile("default")
 public class UserRepositoryImplementation implements UserRepository {
 
-    private MongoCollection<Document> initialCredentials;
-    private MongoCollection<Document> applicationUsers;
+    private final MongoCollection<Document> applicationUsers;
 
     public UserRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.initialCredentials = mongoDatabase.getCollection("initialCredentials");
         this.applicationUsers = mongoDatabase.getCollection("applicationUsers");
-    }
-
-    @Override
-    public InitialCredentials getInitialCredentials(String passwordIfNotInitialized) {
-
-        try {
-
-            initialCredentials.insertOne(
-                    new Document("_id", "uniqueId")
-                            .append("initialized", false)
-                            .append("password", passwordIfNotInitialized)
-            );
-
-            return new InitialCredentials(passwordIfNotInitialized, false);
-
-        } catch (MongoWriteException e) {
-
-            Document uniqueDocument = initialCredentials.find(
-                    eq("_id", "uniqueId")
-            ).first();
-
-            return new InitialCredentials(
-                    uniqueDocument.getString("password"),
-                    uniqueDocument.getBoolean("initialized")
-            );
-
-        }
-
-    }
-
-    @Override
-    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
-
-        UpdateResult updateResult = initialCredentials.updateOne(
-                and(eq("initialized", false), eq("password", firstUserCredentials.getServerPassword())),
-                combine(set("initialized", true), set("password", null))
-        );
-        if (updateResult.getModifiedCount() != 1) {
-            throw new BadCredentialsException("Failed to update initial credentials!");
-        }
-
-        Document document = new Document("username", firstUserCredentials.getUsername())
-                .append("password", firstUserCredentials.getPassword())
-                .append("enabled", true)
-                .append("firstName", firstUserCredentials.getFirstName())
-                .append("lastName", firstUserCredentials.getLastName())
-                .append("userType", UserType.Administrator.toString());
-        applicationUsers.insertOne(document);
-        return document.getObjectId("_id").toString();
     }
 
     @Override

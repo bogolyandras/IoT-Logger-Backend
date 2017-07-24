@@ -3,29 +3,29 @@ package com.bogolyandras.iotlogger.controller;
 import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.dto.initialize.FirstUserStatus;
 import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
-import com.bogolyandras.iotlogger.service.FirstAccountService;
+import com.bogolyandras.iotlogger.service.InitializationService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/account/firstAccount")
-public class FirstAccountController {
+public class InitializationController {
 
-    private final FirstAccountService firstAccountService;
+    private final InitializationService initializationService;
 
-    public FirstAccountController(FirstAccountService firstAccountService) {
-        this.firstAccountService = firstAccountService;
+    public InitializationController(InitializationService initializationService) {
+        this.initializationService = initializationService;
     }
 
     @GetMapping
     public FirstUserStatus returnStatus() {
-        return new FirstUserStatus(firstAccountService.isFirstUserSet());
+        return new FirstUserStatus(initializationService.isFirstUserSet());
     }
 
     @PostMapping
     public JwtToken initializeFirstUser(@Valid @RequestBody FirstUserCredentials firstUserCredentials) {
-        return firstAccountService.initializeFirstUser(firstUserCredentials);
+        return initializationService.initializeFirstUser(firstUserCredentials);
     }
 
 }
