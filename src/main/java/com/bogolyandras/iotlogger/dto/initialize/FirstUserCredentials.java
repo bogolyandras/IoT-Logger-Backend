@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.dto;
+package com.bogolyandras.iotlogger.dto.initialize;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

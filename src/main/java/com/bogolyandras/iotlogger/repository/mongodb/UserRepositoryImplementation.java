@@ -1,9 +1,9 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.domain.ApplicationUser;
-import com.bogolyandras.iotlogger.domain.InitialCredentials;
-import com.bogolyandras.iotlogger.domain.UserType;
-import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
+import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
+import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.domain.user.UserType;
+import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;

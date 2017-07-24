@@ -1,7 +1,7 @@
 package com.bogolyandras.iotlogger.service;
 
-import com.bogolyandras.iotlogger.domain.InitialCredentials;
-import com.bogolyandras.iotlogger.dto.FirstUserCredentials;
+import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.slf4j.Logger;

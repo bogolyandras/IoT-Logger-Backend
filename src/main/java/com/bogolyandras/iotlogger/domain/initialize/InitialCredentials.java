@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.domain;
+package com.bogolyandras.iotlogger.domain.initialize;
 
 public class InitialCredentials {
 

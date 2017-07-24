@@ -1,5 +1,5 @@
-spring:
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/iotlogger
-    username: dbuser
-    password: dbpass
+mysql:
+  host: localhost
+  port: 3306
+  username: dbuser
+  password: dbpass

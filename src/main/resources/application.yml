@@ -1,8 +1,6 @@
-spring:
-  profiles:
-    active: mysql
-  datasource:
-    continue-on-error: true
+#spring:
+#  profiles:
+#    active: mysql
 
 endpoints:
   cors:

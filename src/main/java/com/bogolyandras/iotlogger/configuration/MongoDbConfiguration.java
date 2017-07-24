@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+
 import java.util.Collections;
 import java.util.List;
 
@@ -15,16 +16,10 @@ import java.util.List;
 public class MongoDbConfiguration {
 
     public MongoDbConfiguration(
-            @Value("${mongodb.username:#{null}}") String userName,
-            @Value("${mongodb.password:#{null}}") String password,
-            @Value("${mongodb.database:#{null}}") String database) {
-        this.userName = userName;
-        this.password = password;
+            @Value("${mongodb.database:#{'iotlogger'}}") String database) {
         this.database = database;
     }
 
-    private final String userName;
-    private final String password;
     private final String database;
 
     @Bean
