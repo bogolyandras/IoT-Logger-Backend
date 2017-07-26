@@ -4,12 +4,18 @@ import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
 import com.bogolyandras.iotlogger.domain.user.UserType;
 import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
+import com.bogolyandras.iotlogger.utility.FileUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.Arrays;
 
+@Repository
+@Profile("mysql")
 public class InitializationRepositoryImplementation implements InitializationRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(InitializationRepositoryImplementation.class);
@@ -29,35 +35,48 @@ public class InitializationRepositoryImplementation implements InitializationRep
             connection.setAutoCommit(false);
 
             try {
+
+                DatabaseMetaData databaseMetaData = connection.getMetaData();
+                ResultSet tables = databaseMetaData.getTables(null, null, "application_properties", null);
+
+                //Check if database have not been initialized
+                if (!tables.next()) {
+
+                    // Initialize database structure
+                    for (String fileName : Arrays.asList("application_users", "application_properties")) {
+                        String sqlScript = FileUtility.getResourceAsString("mysql/" + fileName + ".sql");
+                        for (String scriptPart : sqlScript.split(";")) {
+                            Statement statement = connection.createStatement();
+                            logger.info(scriptPart);
+                            statement.executeUpdate(scriptPart);
+                        }
+                    }
+
+                    // Insert initial password
+                    PreparedStatement statement = connection.prepareStatement("INSERT INTO `application_properties`(`property_key`, `value`) VALUES ('initial_password', ?)");
+                    statement.setString(1, passwordIfNotInitialized);
+                    statement.executeUpdate();
+
+                    //Finalize the state
+                    connection.commit();
+                    return new InitialCredentials(passwordIfNotInitialized,false);
+                }
+
                 ResultSet resultSet = connection
                         .createStatement()
-                        .executeQuery("SELECT `initialized`, `password` FROM `initial_credentials` WHERE `unique_row` = 1");
+                        .executeQuery("SELECT `value` FROM `application_properties` WHERE `property_key` = 'initial_password'");
 
                 if (!resultSet.next()) {
-
-                    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `initial_credentials`(`unique_row`, `password`, `initialized`) VALUES (?, ?, ?)");
-                    preparedStatement.setBoolean(1, true);
-                    preparedStatement.setString(2, passwordIfNotInitialized);
-                    preparedStatement.setBoolean(3, false);
-                    preparedStatement.executeUpdate();
-
-                    connection.commit();
-
-                    return new InitialCredentials(passwordIfNotInitialized,false);
-
+                    return new InitialCredentials(null, true);
                 } else {
-
-                    String password = resultSet.getString("password");
-                    boolean initialized = resultSet.getBoolean("initialized");
-
-                    connection.commit();
-
-                    return new InitialCredentials(password, initialized);
+                    String password = resultSet.getString("value");
+                    return new InitialCredentials(password, password == null);
                 }
 
             } catch (SQLException e) {
                 connection.rollback();
                 connection.setAutoCommit(true);
+                logger.warn("SQL Exception occured", e);
                 return null;
             }
 

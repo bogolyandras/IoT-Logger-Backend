@@ -1,7 +1,3 @@
-#spring:
-#  profiles:
-#    active: mysql
-
 endpoints:
   cors:
     allowed-origins: http://localhost:4200

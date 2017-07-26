@@ -19,7 +19,7 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 @Repository
-@Profile("default")
+@Profile("mongodb")
 public class InitializationRepositoryImplementation implements InitializationRepository {
 
     private final MongoCollection<Document> initialCredentials;

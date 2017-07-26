@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-@Profile("default")
+@Profile("mongodb")
 public class MongoDbConfiguration {
 
     public MongoDbConfiguration(

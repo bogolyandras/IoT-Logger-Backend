@@ -20,7 +20,7 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 @Repository
-@Profile("default")
+@Profile("mongodb")
 public class UserRepositoryImplementation implements UserRepository {
 
     private final MongoCollection<Document> applicationUsers;

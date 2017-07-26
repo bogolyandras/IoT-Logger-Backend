@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Random;
 public class InitializationService {
 
     private static final Logger logger = LoggerFactory.getLogger(InitializationService.class);
+    private static final long DATABASE_INITIALIZATION_RETRY_RATE = 1000 * 10;
 
     private final InitializationRepository initializationRepository;
     private final PasswordEncoder passwordEncoder;
@@ -37,7 +39,7 @@ public class InitializationService {
         randomPassword = DatatypeConverter.printHexBinary(randomBytes);
     }
 
-    @Scheduled(fixedRate = 1000 * 10)
+    @Scheduled(fixedRate = DATABASE_INITIALIZATION_RETRY_RATE)
     public void initializeFirstUserPasswordIfDoesNotExist() {
 
         if (databaseInitialized) {
@@ -47,11 +49,18 @@ public class InitializationService {
         InitialCredentials initialCredentials = initializationRepository.getInitialCredentials(randomPassword);
 
         if (initialCredentials == null) {
-            logger.info("Failed to initialize the database");
-        } else if (!initialCredentials.getInitialized()) {
+            logger.info("Failed to initialize the database, will retry in " + (DATABASE_INITIALIZATION_RETRY_RATE / 1000) + " seconds");
+            return;
+        }
+
+        databaseInitialized = true;
+
+        if (!initialCredentials.getInitialized()) {
             logger.info("The first user has not been created. " +
                     "You can use the following password for this action");
-            logPassword(initialCredentials.getPassword());
+            logger.info("******************************");
+            logger.info("*****" + initialCredentials.getPassword() + "*****");
+            logger.info("******************************");
         } else {
             firstUserSet = true;
         }
@@ -64,17 +73,11 @@ public class InitializationService {
             throw new AccessDeniedException("Already initialized!");
         }
         if (!firstUserCredentials.getServerPassword().equals(initialCredentials.getPassword())) {
-            throw new AccessDeniedException("Incorrect password!");
+            throw new BadCredentialsException("Incorrect password!");
         }
         firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
         firstUserSet = true;
         return new JwtToken(jwtService.issueToken(initializationRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)));
-    }
-
-    private void logPassword(String passwordToBeLogged) {
-        logger.info("******************************");
-        logger.info("*****" + passwordToBeLogged + "*****");
-        logger.info("******************************");
     }
 
     public boolean isFirstUserSet() {

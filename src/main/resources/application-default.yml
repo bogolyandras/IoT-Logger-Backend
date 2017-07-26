@@ -1,2 +1,3 @@
-mongodb:
-  database: 'iotlogger'
+spring:
+  profiles:
+    active: mongodb
