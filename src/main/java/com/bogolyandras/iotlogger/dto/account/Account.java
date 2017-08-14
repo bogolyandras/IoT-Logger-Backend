@@ -2,41 +2,32 @@ package com.bogolyandras.iotlogger.dto.account;
 
 public class Account {
 
-    private String username;
-    private String firstName;
-    private String lastName;
-    private Long registrationTime;
+    private final String username;
+    private final String firstName;
+    private final String lastName;
+    private final Long registrationTime;
+
+    public Account(String username, String firstName, String lastName, Long registrationTime) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.registrationTime = registrationTime;
+    }
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public Long getRegistrationTime() {
         return registrationTime;
-    }
-
-    public void setRegistrationTime(Long registrationTime) {
-        this.registrationTime = registrationTime;
     }
 
 }

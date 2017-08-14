@@ -19,8 +19,8 @@ public class JwtAuthenticationFilter implements Filter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    private JwtService jwtService;
-    private AuthenticationService authenticationService;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
     public JwtAuthenticationFilter(JwtService jwtService, AuthenticationService authenticationService) {
         this.jwtService = jwtService;

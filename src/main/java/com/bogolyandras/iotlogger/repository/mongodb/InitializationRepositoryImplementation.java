@@ -1,9 +1,10 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
 import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.domain.user.UserType;
+import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
 import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
+import com.mongodb.MongoException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -54,6 +55,8 @@ public class InitializationRepositoryImplementation implements InitializationRep
                     uniqueDocument.getBoolean("initialized")
             );
 
+        } catch (MongoException e) {
+            return null;
         }
 
     }
@@ -74,7 +77,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
                 .append("enabled", true)
                 .append("firstName", firstUserCredentials.getFirstName())
                 .append("lastName", firstUserCredentials.getLastName())
-                .append("userType", UserType.Administrator.toString());
+                .append("userType", ApplicationUser.UserType.Administrator.toString());
         applicationUsers.insertOne(document);
         return document.getObjectId("_id").toString();
     }

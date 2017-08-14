@@ -1,7 +1,7 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
 import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.domain.user.UserType;
+import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
 import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import com.bogolyandras.iotlogger.utility.FileUtility;
@@ -115,7 +115,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
                 preparedStatementForFirstUserRecord.setBoolean(3, true);
                 preparedStatementForFirstUserRecord.setString(4, firstUserCredentials.getFirstName());
                 preparedStatementForFirstUserRecord.setString(5, firstUserCredentials.getLastName());
-                preparedStatementForFirstUserRecord.setString(6, UserType.Administrator.toString());
+                preparedStatementForFirstUserRecord.setString(6, ApplicationUser.UserType.Administrator.toString());
                 if (preparedStatementForFirstUserRecord.executeUpdate() != 1) {
                     throw new SQLException("First user could not be inserted!");
                 }

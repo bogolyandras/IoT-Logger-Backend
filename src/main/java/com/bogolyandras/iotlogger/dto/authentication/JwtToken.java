@@ -2,7 +2,7 @@ package com.bogolyandras.iotlogger.dto.authentication;
 
 public class JwtToken {
 
-    private String token;
+    private final String token;
 
     public JwtToken(String token) {
         this.token = token;

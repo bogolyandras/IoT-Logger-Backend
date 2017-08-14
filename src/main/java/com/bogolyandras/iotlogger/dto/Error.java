@@ -2,7 +2,7 @@ package com.bogolyandras.iotlogger.dto;
 
 public class Error {
 
-    private String message;
+    private final String message;
 
     public Error(String message) {
         this.message = message;

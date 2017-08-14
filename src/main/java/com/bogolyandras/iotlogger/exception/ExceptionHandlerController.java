@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
-public class ExpectionHandlerController {
+public class ExceptionHandlerController {
 
     @ExceptionHandler({NoSuchElementException.class})
     @ResponseStatus(code = HttpStatus.NOT_FOUND)

@@ -82,4 +82,8 @@ public class ApplicationUser {
         this.userType = userType;
     }
 
+    public enum UserType {
+        User, Administrator
+    }
+
 }

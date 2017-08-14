@@ -1,7 +1,6 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
 import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
-import com.bogolyandras.iotlogger.domain.user.UserType;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -72,7 +71,7 @@ public class UserRepositoryImplementation implements UserRepository {
         applicationUser.setEnabled(resultSet.getBoolean("enabled"));
         applicationUser.setFirstName(resultSet.getString("first_name"));
         applicationUser.setLastName(resultSet.getString("last_name"));
-        applicationUser.setUserType(UserType.valueOf(resultSet.getString("user_type")));
+        applicationUser.setUserType(ApplicationUser.UserType.valueOf(resultSet.getString("user_type")));
         applicationUser.setRegistrationTime(resultSet.getTimestamp("registration_time").toInstant().getEpochSecond() / 1000);
         return applicationUser;
     }

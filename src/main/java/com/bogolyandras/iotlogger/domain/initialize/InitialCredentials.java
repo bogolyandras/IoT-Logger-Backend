@@ -2,9 +2,9 @@ package com.bogolyandras.iotlogger.domain.initialize;
 
 public class InitialCredentials {
 
-    private String password;
+    private final String password;
 
-    private Boolean initialized;
+    private final Boolean initialized;
 
     public InitialCredentials(String password, Boolean initialized) {
         this.password = password;
@@ -15,16 +15,8 @@ public class InitialCredentials {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Boolean getInitialized() {
         return initialized;
-    }
-
-    public void setInitialized(Boolean initialized) {
-        this.initialized = initialized;
     }
 
 }
