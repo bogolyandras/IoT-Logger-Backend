@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/account/firstAccount")
+@RequestMapping("/accounts/firstAccount")
 public class InitializationController {
 
     private final InitializationService initializationService;
