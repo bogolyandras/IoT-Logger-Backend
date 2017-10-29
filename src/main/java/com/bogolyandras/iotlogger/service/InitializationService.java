@@ -1,8 +1,9 @@
 package com.bogolyandras.iotlogger.service;
 
-import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
-import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.value.authentication.JwtToken;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,9 +76,14 @@ public class InitializationService {
         if (!firstUserCredentials.getServerPassword().equals(initialCredentials.getPassword())) {
             throw new BadCredentialsException("Incorrect password!");
         }
-        firstUserCredentials.setPassword(passwordEncoder.encode(firstUserCredentials.getPassword()));
         firstUserSet = true;
-        return new JwtToken(jwtService.issueToken(initializationRepository.disableInitialCredentialsAndAddFirstUser(firstUserCredentials)));
+        return new JwtToken(
+            jwtService.issueToken(
+                initializationRepository.disableInitialCredentialsAndAddFirstUser(
+                    new FirstUserCredentialsWithEncodedPassword(firstUserCredentials, passwordEncoder.encode(firstUserCredentials.getPassword()))
+                )
+            )
+        );
     }
 
     public boolean isFirstUserSet() {

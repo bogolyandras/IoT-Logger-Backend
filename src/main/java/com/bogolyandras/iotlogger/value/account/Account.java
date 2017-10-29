@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.dto.account;
+package com.bogolyandras.iotlogger.value.account;
 
 public class Account {
 

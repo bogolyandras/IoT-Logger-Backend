@@ -1,8 +1,9 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
-import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import com.mongodb.MongoException;
 import com.mongodb.MongoWriteException;
@@ -27,8 +28,8 @@ public class InitializationRepositoryImplementation implements InitializationRep
     private final MongoCollection<Document> applicationUsers;
 
     public InitializationRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.initialCredentials = mongoDatabase.getCollection("initialCredentials");
-        this.applicationUsers = mongoDatabase.getCollection("applicationUsers");
+        this.initialCredentials = mongoDatabase.getCollection("initial_credentials");
+        this.applicationUsers = mongoDatabase.getCollection("application_users");
     }
 
     @Override
@@ -36,8 +37,9 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
         try {
 
+            //Try to insert a document with unique_id key
             initialCredentials.insertOne(
-                    new Document("_id", "uniqueId")
+                    new Document("_id", "unique_id")
                             .append("initialized", false)
                             .append("password", passwordIfNotInitialized)
             );
@@ -46,8 +48,9 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
         } catch (MongoWriteException e) {
 
+            //If it already exists, it will cause a write error
             Document uniqueDocument = initialCredentials.find(
-                    eq("_id", "uniqueId")
+                    eq("_id", "unique_id")
             ).first();
 
             return new InitialCredentials(
@@ -56,13 +59,16 @@ public class InitializationRepositoryImplementation implements InitializationRep
             );
 
         } catch (MongoException e) {
+            //If there is a database connectivity problem, we can't do nothing, let's retry later
             return null;
         }
 
     }
 
     @Override
-    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithEncodedPassword firstUserCredentialsWithEncodedPassword) {
+
+        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithEncodedPassword.getFirstUserCredentials();
 
         UpdateResult updateResult = initialCredentials.updateOne(
                 and(eq("initialized", false), eq("password", firstUserCredentials.getServerPassword())),
@@ -73,7 +79,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
         }
 
         Document document = new Document("username", firstUserCredentials.getUsername())
-                .append("password", firstUserCredentials.getPassword())
+                .append("password", firstUserCredentialsWithEncodedPassword.getPasswordHash())
                 .append("enabled", true)
                 .append("firstName", firstUserCredentials.getFirstName())
                 .append("lastName", firstUserCredentials.getLastName())

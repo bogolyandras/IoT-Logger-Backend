@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.repository.definition;
 
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 
 public interface UserRepository {
 

@@ -1,8 +1,8 @@
-package com.bogolyandras.iotlogger.dto.initialize;
+package com.bogolyandras.iotlogger.value.initialize;
 
 public class FirstUserStatus {
 
-    private Boolean initialized;
+    private final Boolean initialized;
 
     public FirstUserStatus(Boolean initialized) {
         this.initialized = initialized;

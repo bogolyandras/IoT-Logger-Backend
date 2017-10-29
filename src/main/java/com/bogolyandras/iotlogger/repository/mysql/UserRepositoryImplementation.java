@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;

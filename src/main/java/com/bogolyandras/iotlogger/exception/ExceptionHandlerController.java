@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.exception;
 
-import com.bogolyandras.iotlogger.dto.Error;
+import com.bogolyandras.iotlogger.value.Error;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.dto;
+package com.bogolyandras.iotlogger.value;
 
 public class Error {
 

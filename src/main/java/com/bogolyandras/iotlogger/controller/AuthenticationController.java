@@ -1,7 +1,7 @@
 package com.bogolyandras.iotlogger.controller;
 
-import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
-import com.bogolyandras.iotlogger.dto.authentication.UsernamePassword;
+import com.bogolyandras.iotlogger.value.authentication.JwtToken;
+import com.bogolyandras.iotlogger.value.authentication.UsernamePassword;
 import com.bogolyandras.iotlogger.service.AuthenticationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

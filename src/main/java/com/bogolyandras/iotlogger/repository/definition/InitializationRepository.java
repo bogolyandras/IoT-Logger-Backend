@@ -1,11 +1,11 @@
 package com.bogolyandras.iotlogger.repository.definition;
 
-import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 
 public interface InitializationRepository {
 
     InitialCredentials getInitialCredentials(String passwordIfNotInitialized);
-    String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials);
+    String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithEncodedPassword firstUserCredentials);
 
 }

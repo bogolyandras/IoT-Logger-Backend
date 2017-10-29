@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.dto.authentication;
+package com.bogolyandras.iotlogger.value.authentication;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

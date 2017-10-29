@@ -1,8 +1,9 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
-import com.bogolyandras.iotlogger.domain.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
-import com.bogolyandras.iotlogger.dto.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import com.bogolyandras.iotlogger.utility.FileUtility;
 import org.slf4j.Logger;
@@ -88,7 +89,9 @@ public class InitializationRepositoryImplementation implements InitializationRep
     }
 
     @Override
-    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentials firstUserCredentials) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithEncodedPassword firstUserCredentialsWithEncodedPassword) {
+
+        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithEncodedPassword.getFirstUserCredentials();
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -111,7 +114,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
                                 "VALUES (?,?,?,?,?,?,NOW())",
                         Statement.RETURN_GENERATED_KEYS);
                 preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
-                preparedStatementForFirstUserRecord.setString(2, firstUserCredentials.getPassword());
+                preparedStatementForFirstUserRecord.setString(2, firstUserCredentialsWithEncodedPassword.getPasswordHash());
                 preparedStatementForFirstUserRecord.setBoolean(3, true);
                 preparedStatementForFirstUserRecord.setString(4, firstUserCredentials.getFirstName());
                 preparedStatementForFirstUserRecord.setString(5, firstUserCredentials.getLastName());

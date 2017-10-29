@@ -1,15 +1,11 @@
 package com.bogolyandras.iotlogger.configuration;
 
-import com.mongodb.*;
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-
-import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @Profile("mongodb")
@@ -44,7 +40,7 @@ public class MongoDbConfiguration {
 
     @Bean
     public MongoDatabase mongoDatabase() {
-        return mongoClient().getDatabase("iotlogger");
+        return mongoClient().getDatabase(database);
     }
 
 }

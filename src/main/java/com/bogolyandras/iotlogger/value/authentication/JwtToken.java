@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.dto.authentication;
+package com.bogolyandras.iotlogger.value.authentication;
 
 public class JwtToken {
 

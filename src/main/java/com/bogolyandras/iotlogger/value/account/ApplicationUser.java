@@ -1,4 +1,4 @@
-package com.bogolyandras.iotlogger.domain.user;
+package com.bogolyandras.iotlogger.value.account;
 
 public class ApplicationUser {
 

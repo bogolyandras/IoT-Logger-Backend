@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -17,7 +17,7 @@ public class UserRepositoryImplementation implements UserRepository {
     private final MongoCollection<Document> applicationUsers;
 
     public UserRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.applicationUsers = mongoDatabase.getCollection("applicationUsers");
+        this.applicationUsers = mongoDatabase.getCollection("application_users");
     }
 
     @Override

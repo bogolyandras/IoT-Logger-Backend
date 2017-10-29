@@ -1,8 +1,8 @@
 package com.bogolyandras.iotlogger.service;
 
-import com.bogolyandras.iotlogger.domain.user.ApplicationUser;
-import com.bogolyandras.iotlogger.dto.authentication.JwtToken;
-import com.bogolyandras.iotlogger.dto.authentication.UsernamePassword;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
+import com.bogolyandras.iotlogger.value.authentication.JwtToken;
+import com.bogolyandras.iotlogger.value.authentication.UsernamePassword;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.bogolyandras.iotlogger.security.JwtUser;
 import org.springframework.security.authentication.BadCredentialsException;
