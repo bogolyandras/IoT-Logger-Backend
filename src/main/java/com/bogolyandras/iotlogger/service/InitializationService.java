@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.service;
 
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
 import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 import com.bogolyandras.iotlogger.value.authentication.JwtToken;
 import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
@@ -80,7 +80,7 @@ public class InitializationService {
         return new JwtToken(
             jwtService.issueToken(
                 initializationRepository.disableInitialCredentialsAndAddFirstUser(
-                    new FirstUserCredentialsWithEncodedPassword(firstUserCredentials, passwordEncoder.encode(firstUserCredentials.getPassword()))
+                    new FirstUserCredentialsWithPasswordHash(firstUserCredentials, passwordEncoder.encode(firstUserCredentials.getPassword()))
                 )
             )
         );

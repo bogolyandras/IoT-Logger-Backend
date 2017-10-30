@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
 import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
@@ -89,9 +89,9 @@ public class InitializationRepositoryImplementation implements InitializationRep
     }
 
     @Override
-    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithEncodedPassword firstUserCredentialsWithEncodedPassword) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithPasswordHash firstUserCredentialsWithPasswordHash) {
 
-        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithEncodedPassword.getFirstUserCredentials();
+        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithPasswordHash.getFirstUserCredentials();
 
         try (Connection connection = dataSource.getConnection()) {
 
@@ -114,7 +114,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
                                 "VALUES (?,?,?,?,?,?,NOW())",
                         Statement.RETURN_GENERATED_KEYS);
                 preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
-                preparedStatementForFirstUserRecord.setString(2, firstUserCredentialsWithEncodedPassword.getPasswordHash());
+                preparedStatementForFirstUserRecord.setString(2, firstUserCredentialsWithPasswordHash.getPasswordHash());
                 preparedStatementForFirstUserRecord.setBoolean(3, true);
                 preparedStatementForFirstUserRecord.setString(4, firstUserCredentials.getFirstName());
                 preparedStatementForFirstUserRecord.setString(5, firstUserCredentials.getLastName());
