@@ -11,5 +11,5 @@ CREATE TABLE device_logs(
           REFERENCES devices(id)
           ON DELETE CASCADE
           ON UPDATE CASCADE,
-  INDEX(data_time)
+  INDEX(device_id, data_time)
 );

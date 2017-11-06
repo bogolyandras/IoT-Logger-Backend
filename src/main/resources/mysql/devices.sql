@@ -8,5 +8,6 @@ CREATE TABLE devices(
   FOREIGN KEY (owner_id)
           REFERENCES application_users(id)
           ON DELETE CASCADE
-          ON UPDATE CASCADE
+          ON UPDATE CASCADE,
+  INDEX(owner_id)
 );

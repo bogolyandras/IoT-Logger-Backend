@@ -1,14 +1,16 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
-import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
+import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
-import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 import com.mongodb.MongoException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.springframework.context.annotation.Profile;
@@ -26,10 +28,14 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
     private final MongoCollection<Document> initialCredentials;
     private final MongoCollection<Document> applicationUsers;
+    private final MongoCollection<Document> devices;
+    private final MongoCollection<Document> deviceLogs;
 
     public InitializationRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.initialCredentials = mongoDatabase.getCollection("initial_credentials");
-        this.applicationUsers = mongoDatabase.getCollection("application_users");
+        this.initialCredentials = mongoDatabase.getCollection("initialCredentials");
+        this.applicationUsers = mongoDatabase.getCollection("applicationUsers");
+        this.devices = mongoDatabase.getCollection("devices");
+        this.deviceLogs = mongoDatabase.getCollection("deviceLogs");
     }
 
     @Override
@@ -43,6 +49,13 @@ public class InitializationRepositoryImplementation implements InitializationRep
                             .append("initialized", false)
                             .append("password", passwordIfNotInitialized)
             );
+
+            applicationUsers.createIndex(Indexes.ascending("username"), new IndexOptions().unique(true));
+            applicationUsers.createIndex(Indexes.ascending("registrationTime"));
+
+            devices.createIndex(Indexes.ascending("ownerId"));
+
+            deviceLogs.createIndex(Indexes.compoundIndex(Indexes.ascending("deviceId"), Indexes.ascending("dataTime")));
 
             return new InitialCredentials(passwordIfNotInitialized, false);
 
