@@ -1,6 +1,6 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithEncodedPassword;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
 import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
@@ -66,9 +66,9 @@ public class InitializationRepositoryImplementation implements InitializationRep
     }
 
     @Override
-    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithEncodedPassword firstUserCredentialsWithEncodedPassword) {
+    public String disableInitialCredentialsAndAddFirstUser(FirstUserCredentialsWithPasswordHash firstUserCredentialsWithPasswordHash) {
 
-        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithEncodedPassword.getFirstUserCredentials();
+        FirstUserCredentials firstUserCredentials = firstUserCredentialsWithPasswordHash.getFirstUserCredentials();
 
         UpdateResult updateResult = initialCredentials.updateOne(
                 and(eq("initialized", false), eq("password", firstUserCredentials.getServerPassword())),
@@ -79,7 +79,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
         }
 
         Document document = new Document("username", firstUserCredentials.getUsername())
-                .append("password", firstUserCredentialsWithEncodedPassword.getPasswordHash())
+                .append("password", firstUserCredentialsWithPasswordHash.getPasswordHash())
                 .append("enabled", true)
                 .append("firstName", firstUserCredentials.getFirstName())
                 .append("lastName", firstUserCredentials.getLastName())
