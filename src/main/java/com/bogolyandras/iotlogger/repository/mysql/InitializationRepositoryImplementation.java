@@ -44,11 +44,11 @@ public class InitializationRepositoryImplementation implements InitializationRep
                 if (!tables.next()) {
 
                     // Initialize database structure
-                    for (String fileName : Arrays.asList("application_users", "application_properties")) {
+                    for (String fileName : Arrays.asList("application_users", "application_properties", "devices", "device_logs")) {
                         String sqlScript = FileUtility.getResourceAsString("mysql/" + fileName + ".sql");
                         for (String scriptPart : sqlScript.split(";")) {
                             Statement statement = connection.createStatement();
-                            logger.info(scriptPart);
+                            logger.debug(scriptPart);
                             statement.executeUpdate(scriptPart);
                         }
                     }
