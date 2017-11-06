@@ -34,7 +34,7 @@ public class MysqlConfiguration {
     @Bean
     public DataSource dataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://" + hostName + ":" + portNumber + "/" + database + "?verifyServerCertificate=false");
+        dataSource.setJdbcUrl("jdbc:mysql://" + hostName + ":" + portNumber + "/" + database + "?useSSL=false");
         dataSource.setUsername(userName);
         dataSource.setPassword(password);
         return dataSource;
