@@ -1,7 +1,33 @@
 package com.bogolyandras.iotlogger.service;
 
+import com.bogolyandras.iotlogger.repository.definition.UserRepository;
+import com.bogolyandras.iotlogger.value.account.Account;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class AccountService {
+
+    private final UserRepository userRepository;
+
+    public AccountService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public Account getAccountById(String identifier) {
+        ApplicationUser applicationUser = userRepository.findAccountById(identifier);
+        if (applicationUser != null) {
+            return new Account(
+                    applicationUser.getUsername(),
+                    applicationUser.getFirstName(),
+                    applicationUser.getLastName(),
+                    applicationUser.getRegistrationTime()
+            );
+        } else {
+            throw new NoSuchElementException("User " + identifier + " is not available.");
+        }
+    }
+
 }

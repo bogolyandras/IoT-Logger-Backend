@@ -1,10 +1,12 @@
 package com.bogolyandras.iotlogger.value.account;
 
+import java.time.Instant;
+
 public class ApplicationUser {
 
     private String id;
 
-    private Long registrationTime;
+    private Instant registrationTime;
 
     private String username;
 
@@ -26,11 +28,11 @@ public class ApplicationUser {
         this.id = id;
     }
 
-    public Long getRegistrationTime() {
+    public Instant getRegistrationTime() {
         return registrationTime;
     }
 
-    public void setRegistrationTime(Long registrationTime) {
+    public void setRegistrationTime(Instant registrationTime) {
         this.registrationTime = registrationTime;
     }
 

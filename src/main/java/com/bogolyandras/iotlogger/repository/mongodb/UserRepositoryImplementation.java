@@ -2,9 +2,11 @@ package com.bogolyandras.iotlogger.repository.mongodb;
 
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +18,8 @@ public class UserRepositoryImplementation implements UserRepository {
 
     private final MongoCollection<Document> applicationUsers;
 
-    public UserRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.applicationUsers = mongoDatabase.getCollection("application_users");
+    public UserRepositoryImplementation(MongoDatabase database) {
+        this.applicationUsers = database.getCollection("applicationUsers");
     }
 
     @Override
@@ -32,7 +34,7 @@ public class UserRepositoryImplementation implements UserRepository {
 
     @Override
     public ApplicationUser findAccountById(String identifier) {
-        Document document = applicationUsers.find(eq("_id", identifier)).first();
+        Document document = applicationUsers.find(eq("_id", new ObjectId(identifier))).first();
         if (document == null) {
             return null;
         } else {
@@ -49,7 +51,7 @@ public class UserRepositoryImplementation implements UserRepository {
         applicationUser.setFirstName(document.getString("firstName"));
         applicationUser.setLastName(document.getString("lastName"));
         applicationUser.setUserType(ApplicationUser.UserType.valueOf(document.getString("userType")));
-        applicationUser.setRegistrationTime((long)document.getObjectId("_id").getTimestamp());
+        applicationUser.setRegistrationTime(document.getDate("registrationTime").toInstant());
         return applicationUser;
     }
 

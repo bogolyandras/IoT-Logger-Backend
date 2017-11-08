@@ -111,7 +111,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
                 PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement(
                         "INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) " +
-                                "VALUES (?,?,?,?,?,?,NOW())",
+                                "VALUES (?,?,?,?,?,?,?))",
                         Statement.RETURN_GENERATED_KEYS);
                 preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
                 preparedStatementForFirstUserRecord.setString(2, firstUserCredentialsWithPasswordHash.getPasswordHash());
@@ -119,6 +119,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
                 preparedStatementForFirstUserRecord.setString(4, firstUserCredentials.getFirstName());
                 preparedStatementForFirstUserRecord.setString(5, firstUserCredentials.getLastName());
                 preparedStatementForFirstUserRecord.setString(6, ApplicationUser.UserType.Administrator.toString());
+                preparedStatementForFirstUserRecord.setTimestamp(7, new Timestamp(new java.util.Date().getTime()));
                 if (preparedStatementForFirstUserRecord.executeUpdate() != 1) {
                     throw new SQLException("First user could not be inserted!");
                 }

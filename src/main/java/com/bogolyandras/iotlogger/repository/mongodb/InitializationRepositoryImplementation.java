@@ -17,6 +17,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -26,16 +28,18 @@ import static com.mongodb.client.model.Updates.set;
 @Profile("mongodb")
 public class InitializationRepositoryImplementation implements InitializationRepository {
 
+    private final MongoDatabase database;
     private final MongoCollection<Document> initialCredentials;
     private final MongoCollection<Document> applicationUsers;
     private final MongoCollection<Document> devices;
     private final MongoCollection<Document> deviceLogs;
 
-    public InitializationRepositoryImplementation(MongoDatabase mongoDatabase) {
-        this.initialCredentials = mongoDatabase.getCollection("initialCredentials");
-        this.applicationUsers = mongoDatabase.getCollection("applicationUsers");
-        this.devices = mongoDatabase.getCollection("devices");
-        this.deviceLogs = mongoDatabase.getCollection("deviceLogs");
+    public InitializationRepositoryImplementation(MongoDatabase database) {
+        this.database = database;
+        this.initialCredentials = database.getCollection("initialCredentials");
+        this.applicationUsers = database.getCollection("applicationUsers");
+        this.devices = database.getCollection("devices");
+        this.deviceLogs = database.getCollection("deviceLogs");
     }
 
     @Override
@@ -49,13 +53,25 @@ public class InitializationRepositoryImplementation implements InitializationRep
                             .append("initialized", false)
                             .append("password", passwordIfNotInitialized)
             );
+            //Exception is thrown if that record already exists
 
-            applicationUsers.createIndex(Indexes.ascending("username"), new IndexOptions().unique(true));
-            applicationUsers.createIndex(Indexes.ascending("registrationTime"));
+            //If we were able to insert the document, we need to initialize the database
+            database.createCollection("applicationUsers");
+            database.createCollection("devices");
+            database.createCollection("deviceLogs");
 
-            devices.createIndex(Indexes.ascending("ownerId"));
+            applicationUsers.createIndex(Indexes.ascending("username"), new IndexOptions().name("username").unique(true));
+            applicationUsers.createIndex(Indexes.ascending("registrationTime"), new IndexOptions().name("registrationTime"));
 
-            deviceLogs.createIndex(Indexes.compoundIndex(Indexes.ascending("deviceId"), Indexes.ascending("dataTime")));
+            devices.createIndex(Indexes.ascending("ownerId"), new IndexOptions().name("ownerId"));
+
+            deviceLogs.createIndex(
+                    Indexes.compoundIndex(
+                            Indexes.ascending("deviceId"),
+                            Indexes.ascending("dataTime")
+                    ),
+                    new IndexOptions().name("deviceIdThroughDateTime")
+            );
 
             return new InitialCredentials(passwordIfNotInitialized, false);
 
@@ -96,7 +112,8 @@ public class InitializationRepositoryImplementation implements InitializationRep
                 .append("enabled", true)
                 .append("firstName", firstUserCredentials.getFirstName())
                 .append("lastName", firstUserCredentials.getLastName())
-                .append("userType", ApplicationUser.UserType.Administrator.toString());
+                .append("userType", ApplicationUser.UserType.Administrator.toString())
+                .append("registrationTime", new Date());
         applicationUsers.insertOne(document);
         return document.getObjectId("_id").toString();
     }

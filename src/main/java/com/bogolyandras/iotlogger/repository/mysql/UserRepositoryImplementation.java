@@ -72,7 +72,7 @@ public class UserRepositoryImplementation implements UserRepository {
         applicationUser.setFirstName(resultSet.getString("first_name"));
         applicationUser.setLastName(resultSet.getString("last_name"));
         applicationUser.setUserType(ApplicationUser.UserType.valueOf(resultSet.getString("user_type")));
-        applicationUser.setRegistrationTime(resultSet.getTimestamp("registration_time").toInstant().getEpochSecond() / 1000);
+        applicationUser.setRegistrationTime(resultSet.getTimestamp("registration_time").toInstant());
         return applicationUser;
     }
 
