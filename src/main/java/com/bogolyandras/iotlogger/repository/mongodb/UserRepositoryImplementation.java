@@ -1,8 +1,7 @@
 package com.bogolyandras.iotlogger.repository.mongodb;
 
-import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
-import com.mongodb.BasicDBObject;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
