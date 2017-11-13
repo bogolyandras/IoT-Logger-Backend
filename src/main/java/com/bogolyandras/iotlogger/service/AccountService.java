@@ -19,15 +19,29 @@ public class AccountService {
     public Account getAccountById(String identifier) {
         ApplicationUser applicationUser = userRepository.findAccountById(identifier);
         if (applicationUser != null) {
-            return new Account(
-                    applicationUser.getUsername(),
-                    applicationUser.getFirstName(),
-                    applicationUser.getLastName(),
-                    applicationUser.getRegistrationTime()
-            );
+            return getApplicationUserIntoAccount(applicationUser);
         } else {
             throw new NoSuchElementException("User " + identifier + " is not available.");
         }
+    }
+
+    public Account getAccountByUsername(String username) {
+        ApplicationUser applicationUser = userRepository.findAccountByUsername(username);
+        if (applicationUser != null) {
+            return getApplicationUserIntoAccount(applicationUser);
+        } else {
+            throw new NoSuchElementException("User " + username + " is not available.");
+        }
+    }
+
+    private Account getApplicationUserIntoAccount(ApplicationUser applicationUser) {
+        return new Account(
+                applicationUser.getId(),
+                applicationUser.getUsername(),
+                applicationUser.getFirstName(),
+                applicationUser.getLastName(),
+                applicationUser.getRegistrationTime()
+        );
     }
 
 }

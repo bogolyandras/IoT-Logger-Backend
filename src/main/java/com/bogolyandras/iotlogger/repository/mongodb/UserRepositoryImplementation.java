@@ -2,12 +2,14 @@ package com.bogolyandras.iotlogger.repository.mongodb;
 
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -39,6 +41,17 @@ public class UserRepositoryImplementation implements UserRepository {
         } else {
             return documentToApplicationUser(document);
         }
+    }
+
+    @Override
+    public List<ApplicationUser> getAllUsers() {
+        FindIterable<Document> documents = applicationUsers.find();
+        MongoCursor<ApplicationUser> iterator = documents.map(this::documentToApplicationUser).iterator();
+        List<ApplicationUser> applicationUsers = new ArrayList<>();
+        while(iterator.hasNext()) {
+            applicationUsers.add(iterator.next());
+        }
+        return applicationUsers;
     }
 
     private ApplicationUser documentToApplicationUser(Document document) {

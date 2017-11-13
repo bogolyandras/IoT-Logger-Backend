@@ -22,9 +22,14 @@ public class AccountController {
         throw new RuntimeException("Not implemented yet!");
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/byId/{userId}")
     public Account getOtherAccount(@PathVariable("userId") String userId) {
         return accountService.getAccountById(userId);
+    }
+
+    @GetMapping("/byUsername/{username}")
+    public Account getAccountByUsername(@PathVariable("username") String username) {
+        return accountService.getAccountByUsername(username);
     }
 
 }

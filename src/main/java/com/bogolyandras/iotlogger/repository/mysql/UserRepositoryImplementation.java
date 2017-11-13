@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 @Profile("mysql")
@@ -56,6 +58,26 @@ public class UserRepositoryImplementation implements UserRepository {
             } else {
                 return resultSetToApplicationUser(resultSet);
             }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public List<ApplicationUser> getAllUsers() {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            connection.setAutoCommit(true);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users`");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<ApplicationUser> applicationUsers = new ArrayList<>();
+            while(resultSet.next()) {
+                applicationUsers.add(resultSetToApplicationUser(resultSet));
+            }
+            return applicationUsers;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
