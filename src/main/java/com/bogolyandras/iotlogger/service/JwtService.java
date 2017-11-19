@@ -20,7 +20,7 @@ public class JwtService {
 
     private static final ObjectMapper jsonObjectMapper = new ObjectMapper();
 
-    public JwtService(@Value("${web.signing-key:#{null}}") String signingKey) {
+    public JwtService(@Value("${web.signingKey:#{null}}") String signingKey) {
         if (signingKey == null) {
             byte[] randomBytes = new byte[30];
             new Random().nextBytes(randomBytes);
