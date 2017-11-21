@@ -17,9 +17,9 @@ import javax.xml.bind.DatatypeConverter;
 import java.util.Random;
 
 @Service
-public class InitializationService {
+public class FirstUserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(InitializationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FirstUserService.class);
     private static final long DATABASE_INITIALIZATION_RETRY_RATE = 1000 * 10;
 
     private final InitializationRepository initializationRepository;
@@ -30,7 +30,7 @@ public class InitializationService {
     private boolean firstUserSet = false;
     private String randomPassword;
 
-    public InitializationService(InitializationRepository initializationRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public FirstUserService(InitializationRepository initializationRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.initializationRepository = initializationRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
