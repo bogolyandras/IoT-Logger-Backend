@@ -26,26 +26,23 @@ public class FirstUserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    private boolean databaseInitialized = false;
-    private boolean firstUserSet = false;
-    private String randomPassword;
+    private String lastPrintedRandomPassword = null;
+    private byte[] randomBytes = new byte[10];
+    private Random random = new Random();
 
     public FirstUserService(InitializationRepository initializationRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.initializationRepository = initializationRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
 
-        byte[] randomBytes = new byte[10];
-        new Random().nextBytes(randomBytes);
-        randomPassword = DatatypeConverter.printHexBinary(randomBytes);
+
     }
 
     @Scheduled(fixedRate = DATABASE_INITIALIZATION_RETRY_RATE)
     public void initializeFirstUserPasswordIfDoesNotExist() {
 
-        if (databaseInitialized) {
-            return;
-        }
+        random.nextBytes(randomBytes);
+        String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
 
         InitialCredentials initialCredentials = initializationRepository.getInitialCredentials(randomPassword);
 
@@ -54,21 +51,23 @@ public class FirstUserService {
             return;
         }
 
-        databaseInitialized = true;
-
-        if (!initialCredentials.getInitialized()) {
+        if (!initialCredentials.getInitialized() && !initialCredentials.getPassword().equals(lastPrintedRandomPassword)) {
             logger.info("The first user has not been created. " +
                     "You can use the following password for this action");
             logger.info("******************************");
             logger.info("*****" + initialCredentials.getPassword() + "*****");
             logger.info("******************************");
-        } else {
-            firstUserSet = true;
+
+            lastPrintedRandomPassword = initialCredentials.getPassword();
         }
 
     }
 
     public JwtToken initializeFirstUser(FirstUserCredentials firstUserCredentials) {
+
+        random.nextBytes(randomBytes);
+        String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
+
         InitialCredentials initialCredentials = initializationRepository.getInitialCredentials(randomPassword);
         if (initialCredentials.getInitialized()) {
             throw new AccessDeniedException("Already initialized!");
@@ -76,7 +75,6 @@ public class FirstUserService {
         if (!firstUserCredentials.getServerPassword().equals(initialCredentials.getPassword())) {
             throw new BadCredentialsException("Incorrect password!");
         }
-        firstUserSet = true;
         return new JwtToken(
             jwtService.issueToken(
                 initializationRepository.disableInitialCredentialsAndAddFirstUser(
@@ -87,7 +85,18 @@ public class FirstUserService {
     }
 
     public boolean isFirstUserSet() {
-        return firstUserSet;
+
+        random.nextBytes(randomBytes);
+        String randomPassword = DatatypeConverter.printHexBinary(randomBytes);
+
+        InitialCredentials initialCredentials = initializationRepository.getInitialCredentials(randomPassword);
+
+        if (initialCredentials == null) {
+            return false;
+        }
+
+        return initialCredentials.getInitialized();
+
     }
 
 }
