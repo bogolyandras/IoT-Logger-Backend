@@ -5,7 +5,9 @@ import com.bogolyandras.iotlogger.value.account.Account;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -16,10 +18,17 @@ public class AccountService {
         this.userRepository = userRepository;
     }
 
+    public List<Account> getAccounts() {
+        return userRepository.getAllUsers()
+                .stream()
+                .map(this::convertApplicationUserIntoAccount)
+                .collect(Collectors.toList());
+    }
+
     public Account getAccountById(String identifier) {
         ApplicationUser applicationUser = userRepository.findAccountById(identifier);
         if (applicationUser != null) {
-            return getApplicationUserIntoAccount(applicationUser);
+            return convertApplicationUserIntoAccount(applicationUser);
         } else {
             throw new NoSuchElementException("User " + identifier + " is not available.");
         }
@@ -28,13 +37,13 @@ public class AccountService {
     public Account getAccountByUsername(String username) {
         ApplicationUser applicationUser = userRepository.findAccountByUsername(username);
         if (applicationUser != null) {
-            return getApplicationUserIntoAccount(applicationUser);
+            return convertApplicationUserIntoAccount(applicationUser);
         } else {
             throw new NoSuchElementException("User " + username + " is not available.");
         }
     }
 
-    private Account getApplicationUserIntoAccount(ApplicationUser applicationUser) {
+    private Account convertApplicationUserIntoAccount(ApplicationUser applicationUser) {
         return new Account(
                 applicationUser.getId(),
                 applicationUser.getUsername(),

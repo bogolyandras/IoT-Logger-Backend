@@ -1,9 +1,0 @@
-endpoints:
-  cors:
-    allowedOrigins: http://localhost:4200
-
-logging:
-  file: logs/iot.log
-
-web:
-  signingKey: appletree
