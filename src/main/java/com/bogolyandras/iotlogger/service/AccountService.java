@@ -49,6 +49,7 @@ public class AccountService {
                 applicationUser.getUsername(),
                 applicationUser.getFirstName(),
                 applicationUser.getLastName(),
+                applicationUser.getUserType(),
                 applicationUser.getRegistrationTime()
         );
     }
