@@ -11,7 +11,6 @@ public class Account {
     private final ApplicationUser.UserType userType;
     private final Instant registrationTime;
 
-
     public Account(String id, String username, String firstName, String lastName, ApplicationUser.UserType userType, Instant registrationTime) {
         this.id = id;
         this.username = username;

@@ -3,11 +3,10 @@ package com.bogolyandras.iotlogger.controller;
 import com.bogolyandras.iotlogger.service.AccountService;
 import com.bogolyandras.iotlogger.utility.SecurityUtility;
 import com.bogolyandras.iotlogger.value.account.Account;
+import com.bogolyandras.iotlogger.value.account.NewAccount;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +26,12 @@ public class AccountController {
         return accountService.getAccounts();
     }
 
+    @Secured("ROLE_ADMINISTRATOR")
+    @PostMapping
+    public Account addAccount(@Validated(NewAccount.AddGroup.class) @RequestBody NewAccount newAccount) {
+        return accountService.addAccount(newAccount);
+    }
+
     @Secured("ROLE_USER")
     @GetMapping("/my")
     public Account getMyAccount() {
@@ -37,6 +42,14 @@ public class AccountController {
     @GetMapping("/byId/{userId}")
     public Account getOtherAccount(@PathVariable("userId") String userId) {
         return accountService.getAccountById(userId);
+    }
+
+    @Secured("ROLE_ADMINISTRATOR")
+    @PatchMapping("/byId/{userId}")
+    public Account patchAccount(
+            @PathVariable("userId") String userId,
+            @Validated(NewAccount.PatchGroup.class) @RequestBody NewAccount newAccount) {
+        return accountService.patchAccountById(userId, newAccount);
     }
 
     @Secured("ROLE_ADMINISTRATOR")

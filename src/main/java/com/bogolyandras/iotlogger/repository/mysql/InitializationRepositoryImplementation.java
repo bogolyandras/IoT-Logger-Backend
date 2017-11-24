@@ -111,7 +111,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
                 PreparedStatement preparedStatementForFirstUserRecord = connection.prepareStatement(
                         "INSERT INTO `application_users`(`username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time`) " +
-                                "VALUES (?,?,?,?,?,?,?))",
+                                "VALUES (?,?,?,?,?,?,?)",
                         Statement.RETURN_GENERATED_KEYS);
                 preparedStatementForFirstUserRecord.setString(1, firstUserCredentials.getUsername());
                 preparedStatementForFirstUserRecord.setString(2, firstUserCredentialsWithPasswordHash.getPasswordHash());
