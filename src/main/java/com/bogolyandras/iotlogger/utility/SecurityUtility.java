@@ -9,12 +9,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityUtility {
 
     public static String getLoggedInUserId() {
+        JwtAuthenticationToken jwtAuthenticationToken = getJtwAuthToken();
+        return jwtAuthenticationToken.getJwtUser().getId();
+    }
+
+    public static boolean isAdminstrator() {
+        JwtAuthenticationToken jwtAuthenticationToken = getJtwAuthToken();
+        return jwtAuthenticationToken.getJwtUser().getAuthorities().contains("ROLE_ADMINISTRATOR");
+    }
+
+    private static JwtAuthenticationToken getJtwAuthToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof JwtAuthenticationToken)) {
             throw new AccessDeniedException("User is not authenticated!");
         }
-        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken)authentication;
-        return jwtAuthenticationToken.getJwtUser().getId();
+        return (JwtAuthenticationToken)authentication;
     }
 
 }

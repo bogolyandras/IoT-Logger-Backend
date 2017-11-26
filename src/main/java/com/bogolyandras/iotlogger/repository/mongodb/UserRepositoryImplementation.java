@@ -88,12 +88,12 @@ public class UserRepositoryImplementation implements UserRepository {
 
         NewAccount newAccount = newAccountWithPasswordHash.getNewAccount();
 
-        List<Bson> updateList = Arrays.asList(
+        List<Bson> updateList = new ArrayList<>(Arrays.asList(
                 set("username", newAccount.getUsername()),
                 set("firstName", newAccount.getFirstName()),
                 set("lastName", newAccount.getLastName()),
-                set("userType", newAccount.getUserType())
-        );
+                set("userType", newAccount.getUserType().toString())
+        ));
         if (newAccountWithPasswordHash.getPasswordHash() != null) {
             updateList.add(set("password", newAccountWithPasswordHash.getPasswordHash()));
         }

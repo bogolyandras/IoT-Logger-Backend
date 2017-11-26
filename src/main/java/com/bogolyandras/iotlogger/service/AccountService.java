@@ -40,6 +40,16 @@ public class AccountService {
     }
 
     public Account patchAccountById(String identifier, NewAccount newAccount) {
+
+        if (SecurityUtility.getLoggedInUserId().equals(identifier)) {
+            if (!SecurityUtility.isAdminstrator() && newAccount.getUserType().equals(ApplicationUser.UserType.Administrator)) {
+                throw new AccessDeniedException("You can't make yourself and administrator!");
+            }
+            if (SecurityUtility.isAdminstrator() && !newAccount.getUserType().equals(ApplicationUser.UserType.Administrator)) {
+                throw new AccessDeniedException("You can't switch from administrator!");
+            }
+        }
+
         return convertApplicationUserIntoAccount(userRepository.patchAccount(
                 identifier,
                 new NewAccountWithPasswordHash(newAccount, (newAccount.getPassword() != null) ? passwordEncoder.encode(newAccount.getPassword()) : null)
