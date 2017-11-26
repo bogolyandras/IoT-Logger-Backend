@@ -165,13 +165,33 @@ public class UserRepositoryImplementation implements UserRepository {
             preparedStatement.setString(4 - parameterIndexMinus, newAccount.getFirstName());
             preparedStatement.setString(5 - parameterIndexMinus, newAccount.getLastName());
             preparedStatement.setString(6 - parameterIndexMinus, newAccount.getUserType().toString());
-            preparedStatement.setString(7 - parameterIndexMinus, identifier);
+            preparedStatement.setLong(7 - parameterIndexMinus, Long.parseLong(identifier));
 
             if (preparedStatement.executeUpdate() != 1) {
                 throw new SQLException("User " + identifier + " could not be updated!");
             }
 
             return findAccountById(identifier);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void deleteAccount(String identifier) {
+
+        try (Connection connection = dataSource.getConnection()) {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "DELETE FROM `application_users` " +
+                    "WHERE `id` = ?");
+            preparedStatement.setLong(1, Long.parseLong(identifier));
+
+            if (preparedStatement.executeUpdate() != 1) {
+                throw new SQLException("User " + identifier + " could not be deleted!");
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

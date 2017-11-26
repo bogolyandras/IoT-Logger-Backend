@@ -8,6 +8,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -103,6 +104,18 @@ public class UserRepositoryImplementation implements UserRepository {
         );
 
         return findAccountById(identifier);
+    }
+
+    @Override
+    public void deleteAccount(String identifier) {
+
+        DeleteResult id = applicationUsers.deleteOne(
+                eq("_id", new ObjectId(identifier))
+        );
+
+        if (id.getDeletedCount() != 1) {
+            throw new RuntimeException("Deleting user " + identifier + " failed!");
+        }
     }
 
     private ApplicationUser documentToApplicationUser(Document document) {

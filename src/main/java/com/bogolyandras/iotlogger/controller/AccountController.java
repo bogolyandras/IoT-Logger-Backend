@@ -38,6 +38,12 @@ public class AccountController {
         return accountService.getAccountById(SecurityUtility.getLoggedInUserId());
     }
 
+    @Secured("ROLE_USER")
+    @PatchMapping("/my")
+    public Account getMyAccount(@Validated(NewAccount.PatchGroup.class) @RequestBody NewAccount newAccount) {
+        return accountService.patchAccountById(SecurityUtility.getLoggedInUserId(), newAccount);
+    }
+
     @Secured("ROLE_ADMINISTRATOR")
     @GetMapping("/byId/{userId}")
     public Account getOtherAccount(@PathVariable("userId") String userId) {
@@ -46,10 +52,16 @@ public class AccountController {
 
     @Secured("ROLE_ADMINISTRATOR")
     @PatchMapping("/byId/{userId}")
-    public Account patchAccount(
+    public Account patchAccountById(
             @PathVariable("userId") String userId,
             @Validated(NewAccount.PatchGroup.class) @RequestBody NewAccount newAccount) {
         return accountService.patchAccountById(userId, newAccount);
+    }
+
+    @Secured("ROLE_ADMINISTRATOR")
+    @DeleteMapping("/byId/{userId}")
+    public void deleteAccount(@PathVariable("userId") String userId) {
+        accountService.deleteAccount(userId);
     }
 
     @Secured("ROLE_ADMINISTRATOR")

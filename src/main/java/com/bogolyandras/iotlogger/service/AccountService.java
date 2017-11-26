@@ -1,10 +1,12 @@
 package com.bogolyandras.iotlogger.service;
 
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
+import com.bogolyandras.iotlogger.utility.SecurityUtility;
 import com.bogolyandras.iotlogger.value.account.Account;
 import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.value.account.NewAccount;
 import com.bogolyandras.iotlogger.value.account.NewAccountWithPasswordHash;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,16 @@ public class AccountService {
                 new NewAccountWithPasswordHash(newAccount, (newAccount.getPassword() != null) ? passwordEncoder.encode(newAccount.getPassword()) : null)
             )
         );
+    }
+
+    public void deleteAccount(String identifier) {
+
+        if (SecurityUtility.getLoggedInUserId().equals(identifier)) {
+            throw new AccessDeniedException("Can't delete yourself!");
+        }
+
+        userRepository.deleteAccount(identifier);
+
     }
 
     public Account getAccountById(String identifier) {
