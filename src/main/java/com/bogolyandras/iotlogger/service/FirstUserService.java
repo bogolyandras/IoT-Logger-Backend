@@ -75,12 +75,13 @@ public class FirstUserService {
         if (!firstUserCredentials.getServerPassword().equals(initialCredentials.getPassword())) {
             throw new BadCredentialsException("Incorrect password!");
         }
+
+        String userId = initializationRepository.disableInitialCredentialsAndAddFirstUser(
+                new FirstUserCredentialsWithPasswordHash(firstUserCredentials, passwordEncoder.encode(firstUserCredentials.getPassword()))
+        );
+
         return new JwtToken(
-            jwtService.issueToken(
-                initializationRepository.disableInitialCredentialsAndAddFirstUser(
-                    new FirstUserCredentialsWithPasswordHash(firstUserCredentials, passwordEncoder.encode(firstUserCredentials.getPassword()))
-                )
-            )
+            jwtService.issueToken(userId)
         );
     }
 

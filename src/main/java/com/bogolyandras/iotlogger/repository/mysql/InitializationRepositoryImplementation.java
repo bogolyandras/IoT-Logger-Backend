@@ -45,7 +45,8 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
                     // Initialize database structure
                     for (String fileName : Arrays.asList("application_users", "application_properties", "devices", "device_logs")) {
-                        String sqlScript = FileUtility.getResourceAsString("mysql/" + fileName + ".sql");
+                        String sqlScript = FileUtility.getResourceAsString(fileName + ".sql");
+                        logger.info(sqlScript);
                         for (String scriptPart : sqlScript.split(";")) {
                             Statement statement = connection.createStatement();
                             logger.debug(scriptPart);
@@ -100,10 +101,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
             try {
 
-                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE `initial_credentials` SET `password`=?,`initialized`=? WHERE `unique_row`=1 AND `password`=?");
-                preparedStatement.setString(1, null);
-                preparedStatement.setBoolean(2, true);
-                preparedStatement.setString(3, firstUserCredentials.getServerPassword());
+                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE `application_properties` SET `value`=NULL WHERE `property_key`='initial_password'");
                 int i = preparedStatement.executeUpdate();
                 if (i != 1) {
                     throw new SQLException("Initial Credentials has not been updated!");
@@ -137,6 +135,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
             } catch (SQLException e) {
 
+                logger.warn("Initialization roolback!", e);
                 connection.rollback();
                 connection.setAutoCommit(true);
                 return null;

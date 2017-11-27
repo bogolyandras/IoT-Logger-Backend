@@ -151,7 +151,7 @@ public class UserRepositoryImplementation implements UserRepository {
                             "`enabled` = ?, " +
                             "`first_name` = ?, " +
                             "`last_name` = ?, " +
-                            "`user_type` = ?, " +
+                            "`user_type` = ? " +
                             "WHERE `id` = ?");
 
             preparedStatement.setString(1, newAccount.getUsername());
