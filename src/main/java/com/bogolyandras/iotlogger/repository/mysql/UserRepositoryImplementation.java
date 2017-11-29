@@ -29,6 +29,7 @@ public class UserRepositoryImplementation implements UserRepository {
         try (Connection connection = dataSource.getConnection()) {
 
             connection.setAutoCommit(true);
+
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `username`=?");
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -50,6 +51,7 @@ public class UserRepositoryImplementation implements UserRepository {
         try (Connection connection = dataSource.getConnection()) {
 
             connection.setAutoCommit(true);
+
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users` WHERE `id`=?");
             preparedStatement.setString(1, identifier);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -71,6 +73,7 @@ public class UserRepositoryImplementation implements UserRepository {
         try (Connection connection = dataSource.getConnection()) {
 
             connection.setAutoCommit(true);
+
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `username`, `password`, `enabled`, `first_name`, `last_name`, `user_type`, `registration_time` FROM `application_users`");
             ResultSet resultSet = preparedStatement.executeQuery();
             List<ApplicationUser> applicationUsers = new ArrayList<>();
@@ -144,6 +147,8 @@ public class UserRepositoryImplementation implements UserRepository {
 
         try (Connection connection = dataSource.getConnection()) {
 
+            connection.setAutoCommit(true);
+
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "UPDATE `application_users` SET " +
                             "`username` = ?, " +
@@ -165,7 +170,7 @@ public class UserRepositoryImplementation implements UserRepository {
             preparedStatement.setString(4 - parameterIndexMinus, newAccount.getFirstName());
             preparedStatement.setString(5 - parameterIndexMinus, newAccount.getLastName());
             preparedStatement.setString(6 - parameterIndexMinus, newAccount.getUserType().toString());
-            preparedStatement.setLong(7 - parameterIndexMinus, Long.parseLong(identifier));
+            preparedStatement.setString(7 - parameterIndexMinus, identifier);
 
             if (preparedStatement.executeUpdate() != 1) {
                 throw new SQLException("User " + identifier + " could not be updated!");
@@ -184,10 +189,12 @@ public class UserRepositoryImplementation implements UserRepository {
 
         try (Connection connection = dataSource.getConnection()) {
 
+            connection.setAutoCommit(true);
+
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "DELETE FROM `application_users` " +
                     "WHERE `id` = ?");
-            preparedStatement.setLong(1, Long.parseLong(identifier));
+            preparedStatement.setString(1, identifier);
 
             if (preparedStatement.executeUpdate() != 1) {
                 throw new SQLException("User " + identifier + " could not be deleted!");
