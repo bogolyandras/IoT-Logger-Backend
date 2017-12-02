@@ -22,25 +22,25 @@ public class DeviceController {
     @Secured("ROLE_USER")
     @GetMapping
     public List<Device> getDevices() {
-        throw new RuntimeException("Not implemented yet!");
+        return deviceService.getMyDevices();
     }
 
-    @Secured("ROLE_USER")
+    @Secured("ROLE_ADMINISTRATOR")
     @GetMapping("/all")
     public List<Device> getAllDevices() {
-        throw new RuntimeException("Not implemented yet!");
+        return deviceService.getAlldevices();
     }
 
     @Secured("ROLE_USER")
     @GetMapping("/byId/{deviceId}")
     public Device getDevice(@PathVariable("deviceId") String deviceId) {
-        throw new RuntimeException("Not implemented yet!");
+        return deviceService.getDevice(deviceId);
     }
 
     @Secured("ROLE_USER")
     @PostMapping
     public Device addDevice(@Valid @RequestBody NewDevice newDevice) {
-        throw new RuntimeException("Not implemented yet!");
+        return deviceService.addDevice(newDevice);
     }
 
     @Secured("ROLE_USER")
@@ -48,14 +48,14 @@ public class DeviceController {
     public Device patchDevice(
             @PathVariable("deviceId") String deviceId,
             @Valid @RequestBody NewDevice newDevice) {
-        throw new RuntimeException("Not implemented yet!");
+        return deviceService.patchDevice(deviceId, newDevice);
     }
 
     @Secured("ROLE_USER")
     @DeleteMapping("/byId/{deviceId}")
-    public Device patchDevice(
+    public void deleteDevice(
             @PathVariable("deviceId") String deviceId) {
-        throw new RuntimeException("Not implemented yet!");
+        deviceService.deleteDevice(deviceId);
     }
 
 }
