@@ -91,7 +91,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
             connection.setAutoCommit(true);
 
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO `application_users`(`owner_id`, `name`, `description`) " +
+                    "INSERT INTO `devices`(`owner_id`, `name`, `description`) " +
                             "VALUES (?,?,?)",
                     Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, ownerId);
