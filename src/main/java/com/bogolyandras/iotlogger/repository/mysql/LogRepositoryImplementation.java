@@ -53,14 +53,14 @@ public class LogRepositoryImplementation implements LogRepository {
             Date registrationDate = new Date();
 
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO `device_logs`(`device_id`, `data_time`, `metric1`, `metric2`, `metric3`) " +
+                    "INSERT INTO `device_logs`(`device_id`, `data_time`, `metric_1`, `metric_2`, `metric_3`) " +
                             "VALUES (?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setLong(1, Long.parseLong(deviceId));
             preparedStatement.setTimestamp(2, Timestamp.from(newLog.getTimestamp()));
             preparedStatement.setBigDecimal(3, newLog.getMetric1());
-            preparedStatement.setBigDecimal(4, newLog.getMetric1());
-            preparedStatement.setBigDecimal(5, newLog.getMetric1());
+            preparedStatement.setBigDecimal(4, newLog.getMetric2());
+            preparedStatement.setBigDecimal(5, newLog.getMetric3());
             if (preparedStatement.executeUpdate() != 1) {
                 throw new SQLException("Log could not be inserted!");
             }
@@ -91,9 +91,9 @@ public class LogRepositoryImplementation implements LogRepository {
         return new Log(
                 Long.toString(resultSet.getLong("id")),
                 resultSet.getTimestamp("data_time").toInstant(),
-                resultSet.getBigDecimal("metric1"),
-                resultSet.getBigDecimal("metric2"),
-                resultSet.getBigDecimal("metric3")
+                resultSet.getBigDecimal("metric_1"),
+                resultSet.getBigDecimal("metric_2"),
+                resultSet.getBigDecimal("metric_3")
         );
     }
 }
