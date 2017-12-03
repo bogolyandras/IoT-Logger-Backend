@@ -18,7 +18,7 @@ public class ExceptionHandlerController {
         return new Error(e.getMessage());
     }
 
-    @ExceptionHandler({AuthenticationException.class})
+    @ExceptionHandler({AuthenticationException.class, IllegalArgumentException.class})
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public Error returnBadLogin(Exception e) {
         return new Error(e.getMessage());
