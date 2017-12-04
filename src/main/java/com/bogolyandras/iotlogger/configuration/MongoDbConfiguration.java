@@ -1,6 +1,8 @@
 package com.bogolyandras.iotlogger.configuration;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,8 +41,11 @@ public class MongoDbConfiguration {
     @Bean
     public MongoClient mongoClient() {
 
+        MongoClientOptions options = MongoClientOptions.builder().readPreference(
+                ReadPreference.nearest()).build();
+
         if (servers.size() != serverPorts.size()) {
-            throw new RuntimeException("Configuration error, you must provide server addresses and ports as well!");
+            throw new RuntimeException("Configuration error, you must provide server addresses and ports as well, the same amount!");
         }
 
         if (servers.size() > 0) {
@@ -49,9 +54,11 @@ public class MongoDbConfiguration {
                 serverAddresses.add(new ServerAddress(servers.get(i), serverPorts.get(i)));
             }
             return new MongoClient(
-                    serverAddresses
+                    serverAddresses,
+                    options
             );
         } else {
+            //Default mongoclient
             return new MongoClient();
         }
 

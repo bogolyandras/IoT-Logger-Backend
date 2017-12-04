@@ -1,12 +1,12 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
+import com.bogolyandras.iotlogger.configuration.MysqlConfiguration;
 import com.bogolyandras.iotlogger.repository.definition.LogRepository;
 import com.bogolyandras.iotlogger.value.logs.Log;
 import com.bogolyandras.iotlogger.value.logs.NewLog;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,16 +16,16 @@ import java.util.List;
 @Profile("mysql")
 public class LogRepositoryImplementation implements LogRepository {
 
-    private final DataSource dataSource;
+    private final MysqlConfiguration.MysqlDataSource dataSource;
 
-    public LogRepositoryImplementation(DataSource dataSource) {
+    public LogRepositoryImplementation(MysqlConfiguration.MysqlDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     public List<Log> getLogsForDevice(String deviceId) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `device_id`, `data_time`, `metric_1`, `metric_2`, `metric_3` FROM `device_logs` WHERE `device_id`=?");
@@ -46,7 +46,7 @@ public class LogRepositoryImplementation implements LogRepository {
     @Override
     public Log storeLog(String deviceId, NewLog newLog) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 

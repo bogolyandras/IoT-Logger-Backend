@@ -1,13 +1,13 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
-import com.bogolyandras.iotlogger.value.account.ApplicationUser;
+import com.bogolyandras.iotlogger.configuration.MysqlConfiguration;
 import com.bogolyandras.iotlogger.repository.definition.UserRepository;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
 import com.bogolyandras.iotlogger.value.account.NewAccount;
 import com.bogolyandras.iotlogger.value.account.NewAccountWithPasswordHash;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,16 +17,16 @@ import java.util.List;
 @Profile("mysql")
 public class UserRepositoryImplementation implements UserRepository {
 
-    private final DataSource dataSource;
+    private final MysqlConfiguration.MysqlDataSource dataSource;
 
-    public UserRepositoryImplementation(DataSource dataSource) {
+    public UserRepositoryImplementation(MysqlConfiguration.MysqlDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     public ApplicationUser findAccountByUsername(String username) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -48,7 +48,7 @@ public class UserRepositoryImplementation implements UserRepository {
     @Override
     public ApplicationUser findAccountById(String identifier) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -70,7 +70,7 @@ public class UserRepositoryImplementation implements UserRepository {
     @Override
     public List<ApplicationUser> getAllUsers() {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -93,7 +93,7 @@ public class UserRepositoryImplementation implements UserRepository {
 
         NewAccount newAccount = newAccountWithPasswordHash.getNewAccount();
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -145,7 +145,7 @@ public class UserRepositoryImplementation implements UserRepository {
 
         NewAccount newAccount = newAccountWithPasswordHash.getNewAccount();
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -187,7 +187,7 @@ public class UserRepositoryImplementation implements UserRepository {
     @Override
     public void deleteAccount(String identifier) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 

@@ -1,17 +1,17 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
-import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
-import com.bogolyandras.iotlogger.value.account.ApplicationUser;
-import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.configuration.MysqlConfiguration;
 import com.bogolyandras.iotlogger.repository.definition.InitializationRepository;
 import com.bogolyandras.iotlogger.utility.FileUtility;
+import com.bogolyandras.iotlogger.value.account.ApplicationUser;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentials;
+import com.bogolyandras.iotlogger.value.initialize.FirstUserCredentialsWithPasswordHash;
+import com.bogolyandras.iotlogger.value.initialize.InitialCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Arrays;
 
@@ -21,16 +21,16 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
     private static final Logger logger = LoggerFactory.getLogger(InitializationRepositoryImplementation.class);
 
-    private final DataSource dataSource;
+    private final MysqlConfiguration.MysqlDataSource dataSource;
 
-    public InitializationRepositoryImplementation(DataSource dataSource) {
+    public InitializationRepositoryImplementation(MysqlConfiguration.MysqlDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     public InitialCredentials getInitialCredentials(String passwordIfNotInitialized) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             connection.setAutoCommit(false);
@@ -94,7 +94,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
         FirstUserCredentials firstUserCredentials = firstUserCredentialsWithPasswordHash.getFirstUserCredentials();
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(false);
             connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);

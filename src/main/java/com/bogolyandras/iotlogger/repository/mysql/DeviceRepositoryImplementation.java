@@ -1,12 +1,12 @@
 package com.bogolyandras.iotlogger.repository.mysql;
 
+import com.bogolyandras.iotlogger.configuration.MysqlConfiguration;
 import com.bogolyandras.iotlogger.repository.definition.DeviceRepository;
 import com.bogolyandras.iotlogger.value.device.Device;
 import com.bogolyandras.iotlogger.value.device.NewDevice;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +15,16 @@ import java.util.List;
 @Profile("mysql")
 public class DeviceRepositoryImplementation implements DeviceRepository {
 
-    private final DataSource dataSource;
+    private final MysqlConfiguration.MysqlDataSource dataSource;
 
-    public DeviceRepositoryImplementation(DataSource dataSource) {
+    public DeviceRepositoryImplementation(MysqlConfiguration.MysqlDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
     @Override
     public List<Device> getDevicesForUser(String identifier) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `owner_id`, `name`, `description` FROM `devices` WHERE `owner_id`=?");
@@ -45,7 +45,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public List<Device> getAllDevices() {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `owner_id`, `name`, `description` FROM `devices`");
@@ -65,7 +65,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public Device getDevice(String identifier) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
             connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `id`, `owner_id`, `name`, `description` FROM `devices` WHERE `id`=?");
@@ -86,7 +86,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public Device addDevice(NewDevice newDevice, String ownerId) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -125,7 +125,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public void deleteDevice(String identifier) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -147,7 +147,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public void deleteDeviceWithOwnerOf(String identifier, String ownerId) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -170,7 +170,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public Device patchDevice(String identifier, NewDevice newDevice) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
@@ -199,7 +199,7 @@ public class DeviceRepositoryImplementation implements DeviceRepository {
     @Override
     public Device patchDeviceWithOwnerOf(String identifier, NewDevice newDevice, String ownerId) {
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
 
             connection.setAutoCommit(true);
 
