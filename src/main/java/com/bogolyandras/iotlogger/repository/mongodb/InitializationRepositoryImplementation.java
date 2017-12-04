@@ -47,6 +47,19 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
         try {
 
+            //Try to find the document
+            Document uniqueDocument = initialCredentials.find(
+                    eq("_id", "unique_id")
+            ).first();
+
+            //If the document found and initialized, return it and exit
+            if (uniqueDocument != null) {
+                return new InitialCredentials(
+                        uniqueDocument.getString("password"),
+                        uniqueDocument.getBoolean("initialized")
+                );
+            }
+
             //Try to insert a document with unique_id key
             initialCredentials.insertOne(
                     new Document("_id", "unique_id")
@@ -77,7 +90,7 @@ public class InitializationRepositoryImplementation implements InitializationRep
 
         } catch (MongoWriteException e) {
 
-            //If it already exists, it will cause a write error
+            //If it already exists, it will cause a write error, that could come from concurrent initialization
             Document uniqueDocument = initialCredentials.find(
                     eq("_id", "unique_id")
             ).first();
