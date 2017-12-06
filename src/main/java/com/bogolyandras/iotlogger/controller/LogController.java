@@ -2,6 +2,8 @@ package com.bogolyandras.iotlogger.controller;
 
 import com.bogolyandras.iotlogger.service.LogService;
 import com.bogolyandras.iotlogger.value.logs.Log;
+import com.bogolyandras.iotlogger.value.logs.LogAggregation;
+import com.bogolyandras.iotlogger.value.logs.LogAggregationRequest;
 import com.bogolyandras.iotlogger.value.logs.NewLog;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,14 @@ public class LogController {
             newLog.setTimestamp(Instant.now());
         }
         return logService.storeLog(deviceId, newLog);
+    }
+
+    @Secured("ROLE_USER")
+    @PostMapping("/byId/{deviceId}/logs/aggregate")
+    public LogAggregation addLog(
+            @PathVariable("deviceId") String deviceId,
+            @Valid @RequestBody LogAggregationRequest logAggregationRequest) {
+        return logService.getLogs(deviceId, logAggregationRequest);
     }
 
 }

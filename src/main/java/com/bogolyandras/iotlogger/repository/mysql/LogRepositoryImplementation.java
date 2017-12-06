@@ -3,6 +3,8 @@ package com.bogolyandras.iotlogger.repository.mysql;
 import com.bogolyandras.iotlogger.configuration.MysqlConfiguration;
 import com.bogolyandras.iotlogger.repository.definition.LogRepository;
 import com.bogolyandras.iotlogger.value.logs.Log;
+import com.bogolyandras.iotlogger.value.logs.LogAggregation;
+import com.bogolyandras.iotlogger.value.logs.LogAggregationRequest;
 import com.bogolyandras.iotlogger.value.logs.NewLog;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -40,6 +42,13 @@ public class LogRepositoryImplementation implements LogRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @Override
+    public LogAggregation getLogAggregation(String deviceId, LogAggregationRequest logAggregationRequest) {
+
+        return new LogAggregation(null);
 
     }
 

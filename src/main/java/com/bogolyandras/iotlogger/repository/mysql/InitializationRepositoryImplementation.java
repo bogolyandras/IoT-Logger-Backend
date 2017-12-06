@@ -30,39 +30,15 @@ public class InitializationRepositoryImplementation implements InitializationRep
     @Override
     public InitialCredentials getInitialCredentials(String passwordIfNotInitialized) {
 
-        try (Connection connection = dataSource.getWriteCapableConnection()) {
+        try (Connection connection = dataSource.getReadOnlyConnection()) {
 
-            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            connection.setAutoCommit(false);
+            connection.setAutoCommit(true);
 
-            try {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            ResultSet tables = databaseMetaData.getTables(null, null, "application_properties", null);
 
-                DatabaseMetaData databaseMetaData = connection.getMetaData();
-                ResultSet tables = databaseMetaData.getTables(null, null, "application_properties", null);
-
-                //Check if database have not been initialized
-                if (!tables.next()) {
-
-                    // Initialize database structure
-                    for (String fileName : Arrays.asList("application_users", "application_properties", "devices", "device_logs")) {
-                        String sqlScript = FileUtility.getResourceAsString(fileName + ".sql");
-                        logger.info(sqlScript);
-                        for (String scriptPart : sqlScript.split(";")) {
-                            Statement statement = connection.createStatement();
-                            logger.debug(scriptPart);
-                            statement.executeUpdate(scriptPart);
-                        }
-                    }
-
-                    // Insert initial password
-                    PreparedStatement statement = connection.prepareStatement("INSERT INTO `application_properties`(`property_key`, `value`) VALUES ('initial_password', ?)");
-                    statement.setString(1, passwordIfNotInitialized);
-                    statement.executeUpdate();
-
-                    //Finalize the state
-                    connection.commit();
-                    return new InitialCredentials(passwordIfNotInitialized,false);
-                }
+            //Check if database have not been initialized
+            if (tables.next()) {
 
                 ResultSet resultSet = connection
                         .createStatement()
@@ -75,12 +51,47 @@ public class InitializationRepositoryImplementation implements InitializationRep
                     return new InitialCredentials(password, password == null);
                 }
 
-            } catch (SQLException e) {
+            }
+
+        } catch (SQLException e) {
+            logger.warn("Can't determine initial stuff", e);
+            return null;
+        }
+
+        try (Connection connection = dataSource.getWriteCapableConnection()) {
+
+            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            connection.setAutoCommit(false);
+
+            try {
+                // Initialize database structure
+                for (String fileName : Arrays.asList("application_properties", "application_users", "devices", "device_logs")) {
+                    String sqlScript = FileUtility.getResourceAsString(fileName + ".sql");
+                    logger.info(sqlScript);
+                    for (String scriptPart : sqlScript.split(";")) {
+                        Statement statement = connection.createStatement();
+                        logger.debug(scriptPart);
+                        statement.executeUpdate(scriptPart);
+                    }
+                }
+
+                // Insert initial password
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `application_properties`(`property_key`, `value`) VALUES ('initial_password', ?)");
+                statement.setString(1, passwordIfNotInitialized);
+                statement.executeUpdate();
+
+                //Finalize the state
+                connection.commit();
+                return new InitialCredentials(passwordIfNotInitialized,false);
+
+            }  catch (SQLException e) {
                 connection.rollback();
                 connection.setAutoCommit(true);
                 logger.warn("SQL Exception occured", e);
                 return null;
             }
+
+
 
         } catch (SQLException e) {
             logger.warn("Can't determine initial stuff", e);

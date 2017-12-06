@@ -5,6 +5,8 @@ import com.bogolyandras.iotlogger.repository.definition.LogRepository;
 import com.bogolyandras.iotlogger.utility.SecurityUtility;
 import com.bogolyandras.iotlogger.value.device.Device;
 import com.bogolyandras.iotlogger.value.logs.Log;
+import com.bogolyandras.iotlogger.value.logs.LogAggregation;
+import com.bogolyandras.iotlogger.value.logs.LogAggregationRequest;
 import com.bogolyandras.iotlogger.value.logs.NewLog;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,10 @@ public class LogService {
             throw new AccessDeniedException("You have no right to add data to this device!");
         }
         return logRepository.getLogsForDevice(deviceId);
+    }
+
+    public LogAggregation getLogs(String deviceId, LogAggregationRequest logAggregationRequest) {
+        return logRepository.getLogAggregation(deviceId, logAggregationRequest);
     }
 
     public Log storeLog(String deviceId, NewLog newLog) {
