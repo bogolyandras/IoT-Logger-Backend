@@ -20,6 +20,7 @@ import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.descending;
 
 @Repository
 @Profile("mongodb")
@@ -96,11 +97,12 @@ public class LogRepositoryImplementation implements LogRepository {
                     min("metric2Minimum", "$metric2"),
                     avg("metric2Mean", "$metric2"),
                     max("metric2Maximum", "$metric2")
-                )
+                ),
+                sort(descending("_id.year", "_id.month", "_id.day"))
             )
         );
 
-        Map<String, LogAggregation.MetricContainer> container = new HashMap<>();
+        Map<String, LogAggregation.MetricContainer> container = new LinkedHashMap<>();
 
         MongoCursor<Document> iterator = aggregate.iterator();
         while(iterator.hasNext()) {
