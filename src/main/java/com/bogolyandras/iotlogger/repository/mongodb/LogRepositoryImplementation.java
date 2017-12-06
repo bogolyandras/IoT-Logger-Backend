@@ -75,9 +75,9 @@ public class LogRepositoryImplementation implements LogRepository {
                 project(
                     fields(
                         excludeId(),
-                        computed("year", new Document("$year", "$dataTime")),
-                        computed("month", new Document("$month", "$dataTime")),
-                        computed("day", new Document("$dayOfMonth", "$dataTime")),
+                        computed("year", new Document("$year", new Document("$subtract", Arrays.asList("$dataTime", logAggregationRequest.getOffset().longValue() * 60 * 1000)))),
+                        computed("month", new Document("$month", new Document("$subtract", Arrays.asList("$dataTime", logAggregationRequest.getOffset().longValue() * 60 * 1000)))),
+                        computed("day", new Document("$dayOfMonth", new Document("$subtract", Arrays.asList("$dataTime", logAggregationRequest.getOffset().longValue() * 60 * 1000)))),
                         include("metric1"),
                         include("metric2"),
                         include("metric3")
@@ -127,17 +127,17 @@ public class LogRepositoryImplementation implements LogRepository {
                     new LogAggregation.LogAggregationRecord(
                         decimal128ToBigDecimal((Decimal128)next.get("metric1Minimum")),
                         decimal128ToBigDecimal((Decimal128)next.get("metric1Mean")),
-                        decimal128ToBigDecimal((Decimal128)next.get("metric1maximum"))
+                        decimal128ToBigDecimal((Decimal128)next.get("metric1Maximum"))
                     ),
                     new LogAggregation.LogAggregationRecord(
                         decimal128ToBigDecimal((Decimal128)next.get("metric2Minimum")),
                         decimal128ToBigDecimal((Decimal128)next.get("metric2Mean")),
-                        decimal128ToBigDecimal((Decimal128)next.get("metric2maximum"))
+                        decimal128ToBigDecimal((Decimal128)next.get("metric2Maximum"))
                     ),
                     new LogAggregation.LogAggregationRecord(
                         decimal128ToBigDecimal((Decimal128)next.get("metric3Minimum")),
                         decimal128ToBigDecimal((Decimal128)next.get("metric3Mean")),
-                        decimal128ToBigDecimal((Decimal128)next.get("metric3maximum"))
+                        decimal128ToBigDecimal((Decimal128)next.get("metric3Maximum"))
                     )
                 )
             );
