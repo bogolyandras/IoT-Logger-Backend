@@ -65,13 +65,13 @@ public class LogRepositoryImplementation implements LogRepository {
 
             connection.setAutoCommit(true);
 
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT YEAR(`new_data_time`) AS `year`" + (groupByMonths ? ", MONTH(`new_data_time`) AS `month`" : "") +( groupByDays? ", DAY(`new_data_time`) AS `day`,": "") + " " +
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT YEAR(`new_data_time`) AS `year`" + (groupByMonths ? ", MONTH(`new_data_time`) AS `month`" : "") +( groupByDays? ", DAY(`new_data_time`) AS `day`": "") + ", " +
                     "MIN(`metric_1`) AS `metric_1_min`, AVG(`metric_1`) AS `metric_1_avg`, MAX(`metric_1`) AS `metric_1_max`, " +
                     "MIN(`metric_2`) AS `metric_2_min`, AVG(`metric_2`) AS `metric_2_avg`, MAX(`metric_2`) AS `metric_2_max`, " +
                     "MIN(`metric_3`) AS `metric_3_min`, AVG(`metric_3`) AS `metric_3_avg`, MAX(`metric_3`) AS `metric_3_max` " +
                     "FROM " +
                     "(SELECT `data_time` - INTERVAL -? MINUTE AS `new_data_time`, `metric_1`, `metric_2`, `metric_3` FROM `device_logs` WHERE `device_id` = ? AND `data_time` >= ? AND `data_time` <= ?) AS data_query " +
-                    "GROUP BY YEAR(`new_data_time`)" + (groupByMonths ? ", MONTH(`new_data_time`)" : "" ) + ( groupByDays ? ", DAY(`new_data_time`)" : "" ));
+                    "GROUP BY YEAR(`new_data_time`)" + (groupByMonths ? ", MONTH(`new_data_time`)" : "" ) + ( groupByDays ? ", DAY(`new_data_time`)" : "") + " ORDER BY `year` DESC" + (groupByMonths ? ", `month` DESC" : "" ) + ( groupByDays? ",`day` DESC" : "" ));
             preparedStatement.setBigDecimal(1, logAggregationRequest.getOffset());
             preparedStatement.setString(2, deviceId);
             preparedStatement.setTimestamp(3, Timestamp.from(logAggregationRequest.getLowTimestampFilter()));
