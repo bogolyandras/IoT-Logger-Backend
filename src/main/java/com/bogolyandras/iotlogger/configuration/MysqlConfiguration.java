@@ -59,6 +59,7 @@ public class MysqlConfiguration {
 
         private final Properties props = new Properties();
         private final String connectionString;
+        private final String readOnlyConnectionString;
         private final ReplicationDriver driver = new ReplicationDriver();
 
         private MysqlDataSourceImplementation(
@@ -88,14 +89,22 @@ public class MysqlConfiguration {
                     replicaString.append(",").append(readServers.get(i)).append(":").append(readServerPorts.get(i));
                 }
                 connectionString = "jdbc:mysql:replication://" + masterHostName + ":" + masterPortNumber + replicaString + "/" + database;
+                readOnlyConnectionString = "jdbc:mysql:replication://" + readServers.get(0) + ":" + readServerPorts.get(0) + replicaString + "/" + database;
             } else {
                 connectionString = "jdbc:mysql:replication://" + masterHostName + ":" + masterPortNumber + "," + masterHostName + ":" + masterPortNumber + "/" + database;
+                readOnlyConnectionString = connectionString;
             }
 
         }
 
-        private Connection createConnection() throws SQLException {
-            Connection conn = driver.connect(connectionString, props);
+        private Connection createConnection(boolean readOnly) throws SQLException {
+            Connection conn;
+            if (readOnly) {
+                conn = driver.connect(readOnlyConnectionString, props);
+            } else {
+                conn = driver.connect(connectionString, props);
+            }
+
             if (conn == null) {
                 throw new SQLException("Cannot create mysql connection!");
             }
@@ -104,14 +113,14 @@ public class MysqlConfiguration {
 
         @Override
         public Connection getWriteCapableConnection() throws SQLException {
-            Connection conn = createConnection();
+            Connection conn = createConnection(false);
             conn.setReadOnly(false);
             return conn;
         }
 
         @Override
         public Connection getReadOnlyConnection() throws SQLException {
-            Connection conn = createConnection();
+            Connection conn = createConnection(true);
             conn.setReadOnly(true);
             return conn;
         }
