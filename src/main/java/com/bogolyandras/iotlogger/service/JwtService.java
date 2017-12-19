@@ -33,7 +33,7 @@ public class JwtService {
 
     public String issueToken(String subject) {
         long issuedAt = System.currentTimeMillis() / 1000L;
-        long expires = issuedAt + 3600 * 24 * 30;
+        long expires = issuedAt + 3600 * 24 * 30; // 30 days validity
         Map<String, String> header = new HashMap<String, String>() {{
             put("alg", "HS256");
             put("typ", "JWT");

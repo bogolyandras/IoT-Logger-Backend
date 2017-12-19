@@ -28,7 +28,7 @@ public class DeviceController {
     @Secured("ROLE_ADMINISTRATOR")
     @GetMapping("/all")
     public List<Device> getAllDevices() {
-        return deviceService.getAlldevices();
+        return deviceService.getAllDevices();
     }
 
     @Secured("ROLE_USER")

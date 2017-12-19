@@ -26,7 +26,7 @@ public class DeviceService {
         return deviceRepository.getDevicesForUser(SecurityUtility.getLoggedInUserId());
     }
     
-    public List<Device> getAlldevices() {
+    public List<Device> getAllDevices() {
         return deviceRepository.getAllDevices();
     }
     

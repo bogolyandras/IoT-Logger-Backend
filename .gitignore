@@ -27,3 +27,4 @@ nbdist/
 ### Application specific ###
 /config/
 /logs/
+/out/

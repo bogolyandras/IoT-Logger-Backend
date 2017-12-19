@@ -20,7 +20,6 @@ import java.util.Random;
 public class FirstUserService {
 
     private static final Logger logger = LoggerFactory.getLogger(FirstUserService.class);
-    private static final long DATABASE_INITIALIZATION_RETRY_RATE = 1000 * 10;
 
     private final InitializationRepository initializationRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,11 +33,11 @@ public class FirstUserService {
         this.initializationRepository = initializationRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-
-
     }
 
-    @Scheduled(fixedRate = DATABASE_INITIALIZATION_RETRY_RATE)
+    private static final long DATABASE_INITIALIZATION_RETRY_RATE = 1000 * 10;
+
+    @Scheduled(fixedDelay = DATABASE_INITIALIZATION_RETRY_RATE)
     public void initializeFirstUserPasswordIfDoesNotExist() {
 
         random.nextBytes(randomBytes);
